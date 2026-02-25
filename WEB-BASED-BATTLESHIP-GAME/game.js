@@ -1,4 +1,4 @@
-import { createBoatData } from "./board";
+import { createBoatData } from "./board.js";
 
 const pBoard = createBoatData();
 

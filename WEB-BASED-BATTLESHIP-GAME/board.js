@@ -6,5 +6,6 @@ export function createBoatData() {
         for (let j=0;j<10;j++){
             board[i][j] = 0;
         }
-    }
+    } 
+    return board;
 }
