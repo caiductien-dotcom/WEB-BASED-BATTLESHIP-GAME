@@ -1,0 +1,32 @@
+:root {
+    --cell-size: 40px;
+    --border-color: #444;
+}
+.game-container {
+    display:flex;
+    justify-content: center;
+    gap:50px;
+    margin-top:20px;
+}
+#player-board,#cpu-board {
+    display:grid;
+    grid-template-columns:repeat(10, var(--cell-size));
+    grid-template-rows:repeat(10, var(--cell-size));
+    border:2px solid var(--border-color);
+    background-color: #e0f7fa;
+}
+.cell {
+    width: var(--cell-size);
+    height: var(--cell-size);
+    border:1px solid var(--border-color);
+    box-sizing:border-box;
+}
+.cell.ship {
+    background-color: #03801e;
+}
+.cell.hit {
+    background-color: red;
+}
+.cell.miss {
+    background-color: rgb(18, 9, 121);
+}
