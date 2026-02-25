@@ -8,5 +8,6 @@ export function createBoatData() {
         for (let j=0;j<board_size;j++){
             board[i][j] = 0;
         }
-    }
+    } 
+    return board;
 }
