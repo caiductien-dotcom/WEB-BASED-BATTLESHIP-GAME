@@ -1,4 +1,4 @@
-import { board_size } from "./constants";
+import { board_size } from "./constants.js";
 
 export function createBoatData() {
     let board = [];
