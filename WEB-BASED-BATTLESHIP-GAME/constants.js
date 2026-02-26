@@ -4,3 +4,7 @@ export const cell_types = {
     ship: 1, 
     hit: 2, 
     miss: 3 };
+export const direction = {
+    HORIZONTAL : 'horizontal',
+    VERTICAL : 'vertical'
+};

@@ -1,9 +1,9 @@
 const SHIPS_CREATOR = [
-    { name: 'Carrier', size: 5 },
-    { name: 'Battleship', size: 4 },
-    { name: 'Cruiser', size: 3 },
-    { name: 'Submarine', size: 2 },
-    { name: 'Destroyer', size: 1 }
+    { shipName: 'Carrier', shipSize: 5},
+    { shipName: 'Battleship', shipSize: 4},
+    { shipName: 'Cruiser', shipSize: 3},
+    { shipName: 'Submarine', shipSize: 2},
+    { shipName: 'Destroyer', shipSize: 1}
 ];
 
 export const createShip = (shipName, shipSize) => {
@@ -16,7 +16,7 @@ export const createShip = (shipName, shipSize) => {
 
         hit() {
             this.hitCounter++;
-            if (this.hitCounter >= shipSize){
+            if (this.hitCounter >= this.shipSize){
                 this.sinkState = true;
             }
         }
