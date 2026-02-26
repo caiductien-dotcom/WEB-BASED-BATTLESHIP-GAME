@@ -1,5 +1,5 @@
 import { cell_types } from "./constants.js";
-export function renderBoard(data,containerId) {
+export function renderBoard(data,containerId,onCellClick) {
     const boardElement = document.getElementById(containerId);
     if (!boardElement) return;
     boardElement.innerHTML = "";
@@ -8,6 +8,9 @@ export function renderBoard(data,containerId) {
             const cellValue = data[i][j];
             const cellElement = document.createElement("div");
             cellElement.classList.add("cell");
+            if (onCellClick) {
+                cellElement.onclick = () => onCellClick(i, j);
+            }
             switch (cellValue) {
                 case cell_types.empty:
                     cellElement.classList.add("empty");

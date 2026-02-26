@@ -5,6 +5,25 @@ import { playerShipArmy } from "./ship.js";
 
 let currentDirection = direction.HORIZONTAL;
 const myArmy = playerShipArmy();
+let shipIndex = 0;
+
+const pBoard = createBoatData();
+const cBoard = createBoatData();
+
+function handlePlacement(row, column) {
+    if(shipIndex >= myArmy.length) return;
+    const currentShip =myArmy[shipIndex];
+    const success =placeShip(pBoard, currentShip, row, column, currentDirection);
+    if (success) {
+        shipIndex++;
+        renderBoard(pBoard, 'player-board', handlePlacement);
+        if (shipIndex === myArmy.length) {
+            alert("All ships placed! Ready to fire!");
+        }
+    } else {
+        alert("Invalid placement. Try again.");
+    }    
+}
 /**
  * Use this function to change the direction of the ship
  */
@@ -20,14 +39,11 @@ export function getShipDirection() {
     return currentDirection;
 }
 
-
-
-const pBoard = createBoatData();
-const cBoard = createBoatData();
-
-const carrier = myArmy[0];
-const success = placeShip(pBoard, carrier, 0, 0, direction.HORIZONTAL);
-const newShip = placeShip(pBoard, carrier, 5, 6, direction.VERTICAL);
-
-renderBoard(pBoard, 'player-board');
+window.onkeydown = (e) => {
+    if (e.key.toLowerCase() === 'r') {
+        toggleDirection(); 
+        console.log("New direction:", currentDirection);
+    }
+};
+renderBoard(pBoard, 'player-board',handlePlacement);
 renderBoard(cBoard, 'cpu-board');
