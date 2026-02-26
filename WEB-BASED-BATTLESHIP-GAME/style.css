@@ -30,3 +30,27 @@
 .cell.miss {
     background-color: rgb(18, 9, 121);
 }
+.controls {
+    margin: 20px 0;
+    text-align: center;
+}
+
+button {
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border: 2px solid #444;
+    background: #fff;
+    margin: 0 5px;
+}
+
+button.active {
+    background-color: #03801e; /* Màu xanh giống tàu */
+    color: white;
+}
+
+#status-text {
+    margin-top: 10px;
+    font-weight: bold;
+    color: #333;
+}

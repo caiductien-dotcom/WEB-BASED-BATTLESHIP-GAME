@@ -38,12 +38,19 @@ export function toggleDirection() {
 export function getShipDirection() {
     return currentDirection;
 }
+const btnH = document.getElementById('btn-horizontal');
+const btnV = document.getElementById('btn-vertical');
 
-window.onkeydown = (e) => {
-    if (e.key.toLowerCase() === 'r') {
-        toggleDirection(); 
-        console.log("New direction:", currentDirection);
-    }
+btnH.onclick = () => {
+    currentDirection = direction.HORIZONTAL; //
+    btnH.classList.add('active');
+    btnV.classList.remove('active');
+};
+
+btnV.onclick = () => {
+    currentDirection = direction.VERTICAL; //
+    btnV.classList.add('active');
+    btnH.classList.remove('active');
 };
 renderBoard(pBoard, 'player-board',handlePlacement);
 renderBoard(cBoard, 'cpu-board');
