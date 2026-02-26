@@ -24,5 +24,5 @@ export const createShip = (shipName, shipSize) => {
 };
 
 export const playerShipArmy = () => {
-    return SHIPS_CREATOR.map(ship => createShip(ship.shipName, ship.shipSize));
+    return SHIPS_CREATOR.map(ship => createShip(ship.name, ship.size));
 }
