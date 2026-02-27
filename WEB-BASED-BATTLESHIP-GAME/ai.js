@@ -1,6 +1,6 @@
-import { placeShip, isValidPlacement, receiveAttack } from "./board";
-import { board_size, direction } from "./constants";
-import { playerShipArmy } from "./ship";
+import { placeShip, isValidPlacement, receiveAttack } from "./board.js";
+import { board_size, direction } from "./constants.js";
+import { playerShipArmy } from "./ship.js";
 
 const cShipArmy = playerShipArmy();
 let shipIndex = 0;
