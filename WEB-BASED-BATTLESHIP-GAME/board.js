@@ -61,3 +61,43 @@ export function placeShip(board, ship, row, column, direction) {
     
     return true;
 }
+
+export function receiveAttack(board, row, column, army){
+    const currentPosition = board[row][column];
+    
+
+    if (currentPosition === cell_types.hit || currentPosition === cell_types.miss) {
+        return "invalid";
+    }
+
+    if (currentPosition === cell_types.ship) {
+        board[row][column] = cell_types.hit;
+
+        let targetShip = null;
+
+        for (const ship of army){
+            for (const position of ship.position){
+                if (position.row === row && position.column === column) {
+                    targetShip = ship;
+                    break;
+                }
+            }
+            if (targetShip) break;
+        }
+        if (targetShip) {
+            targetShip.hit();
+            if (targetShip.sinkState){
+                return "sunk";
+            }
+            return "hit"
+        }
+    }
+    else {
+        board[row][column] = cell_types.miss;
+        return "miss";
+    }
+}
+
+export function defeated(army) {
+    return army.every(ship => ship.sinkState === true);
+}

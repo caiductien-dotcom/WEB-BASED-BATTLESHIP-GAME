@@ -1,23 +1,23 @@
-import { createBoatData, isValidPlacement, placeShip } from "./board.js";
+import { createBoatData, placeShip } from "./board.js";
 import { renderBoard } from "./ui.js";
 import { direction } from "./constants.js";
 import { playerShipArmy } from "./ship.js";
 
 let currentDirection = direction.HORIZONTAL;
-const myArmy = playerShipArmy();
+const pArmy = playerShipArmy();
 let shipIndex = 0;
 
 const pBoard = createBoatData();
 const cBoard = createBoatData();
 
 function handlePlacement(row, column) {
-    if(shipIndex >= myArmy.length) return;
-    const currentShip =myArmy[shipIndex];
+    if(shipIndex >= pArmy.length) return;
+    const currentShip = pArmy[shipIndex];
     const success =placeShip(pBoard, currentShip, row, column, currentDirection);
     if (success) {
         shipIndex++;
         renderBoard(pBoard, 'player-board', handlePlacement);
-        if (shipIndex === myArmy.length) {
+        if (shipIndex === pArmy.length) {
             alert("All ships placed! Ready to fire!");
         }
     } else {
