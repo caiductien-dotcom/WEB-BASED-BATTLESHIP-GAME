@@ -1,56 +1,100 @@
 :root {
-    --cell-size: 40px;
+    --cell-size: 40px; 
     --border-color: #444;
 }
+
+body {
+    font-family: sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #f0f0f0;
+}
+
 .game-container {
-    display:flex;
+    display: flex;
+    gap: 40px;
     justify-content: center;
-    gap:50px;
-    margin-top:20px;
+    margin-top: 20px;
 }
-#player-board,#cpu-board {
-    display:grid;
-    grid-template-columns:repeat(10, var(--cell-size));
-    grid-template-rows:repeat(10, var(--cell-size));
-    border:2px solid var(--border-color);
-    background-color: #e0f7fa;
+
+
+.board {
+    position: relative; 
+    display: grid;
+    grid-template-columns: repeat(10, var(--cell-size));
+    grid-template-rows: repeat(10, var(--cell-size));
+    background-color: #e0f7fa; 
+    border: 2px solid var(--border-color);
 }
+
 .cell {
     width: var(--cell-size);
     height: var(--cell-size);
-    border:1px solid var(--border-color);
-    box-sizing:border-box;
+    border: 1px solid rgba(0,0,0,0.1);
+    box-sizing: border-box;
+    z-index: 1; 
 }
-.cell.ship {
-    background-color: #03801e;
+
+.ship-display {
+    position: absolute; 
+    background-size: cover; 
+    background-repeat: no-repeat;
+    background-position: center;
+    pointer-events: none; 
+    z-index: 5;
+    transition: all 0.2s ease; 
 }
+
+.ship-display.carrier    { background-image: url('./assets/carrier.png'); }
+.ship-display.battleship { background-image: url('./assets/battleship.png'); }
+.ship-display.cruiser    { background-image: url('./assets/cruiser.png'); }
+.ship-display.submarine  { background-image: url('./assets/submarine.png'); }
+.ship-display.destroyer  { background-image: url('./assets/destroyer.png'); }
+
+.ship-display.vertical {
+    transform: rotate(90deg);
+    transform-origin: top left; 
+}
+
 .cell.hit {
-    background-color: red;
+    background-color: rgba(255, 0, 0, 0.4); 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10; 
 }
+.cell.hit::after { 
+    content: '💥'; 
+    font-size: 20px; 
+}
+
 .cell.miss {
-    background-color: rgb(18, 9, 121);
+    background-color: #120979; 
+    opacity: 0.6;
+    z-index: 10;
 }
-.controls {
-    margin: 20px 0;
+
+.controls { 
+    margin: 20px; 
+    text-align: center; 
+}
+button.active { 
+    background: #03801e; 
+    color: white; 
+}
+
+.modal-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.8); 
+    display: none;
+    justify-content: center; 
+    align-items: center;
+    z-index: 100;
+}
+.modal-content { 
+    background: white; 
+    padding: 40px; 
+    border-radius: 10px;
     text-align: center;
-}
-
-button {
-    padding: 10px 20px;
-    font-size: 16px;
-    cursor: pointer;
-    border: 2px solid #444;
-    background: #fff;
-    margin: 0 5px;
-}
-
-button.active {
-    background-color: #03801e; /* Màu xanh giống tàu */
-    color: white;
-}
-
-#status-text {
-    margin-top: 10px;
-    font-weight: bold;
-    color: #333;
 }

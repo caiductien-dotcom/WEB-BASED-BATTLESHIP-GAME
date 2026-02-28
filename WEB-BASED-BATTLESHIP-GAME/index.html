@@ -3,21 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Battleship Game Pro</title>
     <link rel="stylesheet" href="style.css">
-    <title>Document</title>
 </head>
 <body>
-    <h1>BATTLE SHIP GAME</h1>
+    <h1>BATTLESHIP GAME</h1>
+
+    <div class="controls">
+        <div class="button-group">
+            <button id="btn-horizontal" class="active">Horizontal</button>
+            <button id="btn-vertical">Vertical</button>
+        </div>
+
+        <div class="difficulty-group">
+            <label for="difficulty-select">Difficulty:</label>
+            <select id="difficulty-select">
+                <option value="easy">Easy (Random)</option>
+                <option value="hard" selected>Hard (AI Hunter)</option>
+            </select>
+        </div>
+
+        <p id="status-text">Status: Preparing fleet...</p>
+    </div>
 
     <div class="game-container">
-        <div id="player-board"></div>
-        <div id="cpu-board"></div>
+        <div class="board-wrapper">
+            <h3>Your Fleet</h3>
+            <div id="player-board" class="board"></div>
+        </div>
+
+        <div class="board-wrapper">
+            <h3>Enemy Fleet</h3>
+            <div id="cpu-board" class="board"></div>
+        </div>
     </div>
-    <div class="controls">
-        <button id="btn-horizontal" class="active">Horizontal</button>
-        <button id="btn-vertical">Vertical</button>
-        <p id="status-text">Placing: Carrier (5 squares)</p>
+
+    <div id="game-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h2 id="modal-title">Notification</h2>
+            <p id="modal-message"></p>
+            <button id="modal-btn">Confirm</button>
+        </div>
     </div>
-    <script type="module" src="./game.js"></script>
+
+    <script type="module" src="./js/game.js"></script>
 </body>
 </html>

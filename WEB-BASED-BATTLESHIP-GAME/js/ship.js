@@ -14,6 +14,8 @@ export const createShip = (shipName, shipSize) => {
         hitCounter : 0,
         sinkState : false,
 
+        placedDirection: null,
+        
         hit() {
             this.hitCounter++;
             if (this.hitCounter >= this.shipSize){

@@ -18,7 +18,13 @@ export function placeCPUShips(cBoard, cShipArmy) {
             let randomRow = Math.floor(Math.random() * board_size);
             let randomColumn = Math.floor(Math.random() * board_size);
             let randomDirection = (Math.floor(Math.random() * 2)) ? direction.HORIZONTAL : direction.VERTICAL;
-            if (placeShip(cBoard, ship, randomRow, randomColumn, randomDirection)) {
+            if (placeShip({
+                board: cBoard, 
+                ship: ship, 
+                row: randomRow, 
+                col: randomColumn, 
+                dirVector: randomDirection
+            })) {
                 validPlacement = true;
             }
         }
@@ -175,8 +181,15 @@ export function hardBotAttack(pBoard, pArmy){
         }
         return result;
     }
-    return destroyTarget(pBoard, pArmy);
+    let result = destroyTarget(pBoard, pArmy);
+    if (result === "back-to-huntmode") {
+        const target = huntingTarget(pBoard);
+        if (target) return receiveAttack(pBoard, target.row, target.column, pArmy);
+    }
+    
+    return result;
 }
+
 
 
 
