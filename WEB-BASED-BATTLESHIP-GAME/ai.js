@@ -76,7 +76,7 @@ let AIMemory = {
     lineQueue : [],
 }
 
-function memoryReset() {
+export function memoryReset() {
     AIMemory.originHit = null;
     AIMemory.currentDirection = null;
     AIMemory.potentialQueue = [];
@@ -119,7 +119,7 @@ function getNext(currentPosition, currentDirection, originHit){
     };
 }
 
-export function destroyTarget(board, army){
+function destroyTarget(board, army){
     let target = null;
 
     if (AIMemory.lineQueue.length > 0){
