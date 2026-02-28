@@ -2,7 +2,7 @@ import { createBoatData, placeShip, receiveAttack, defeated } from "./board.js";
 import { renderBoard } from "./ui.js";
 import { direction } from "./constants.js";
 import { playerShipArmy } from "./ship.js";
-import { placeCPUShips, botAttack } from "./ai.js"; 
+import { placeCPUShips, easyBotAttack } from "./ai.js"; 
 
 let currentDirection = direction.HORIZONTAL;
 const pArmy = playerShipArmy();
@@ -11,7 +11,8 @@ let shipIndex = 0;
 let isGameOver = false;
 
 const pBoard = createBoatData();
-const cBoard = createBoatData();
+const cEasyBoard = createBoatData();
+const cHardBoard = createBoatData();
 
 function handlePlacement(row, column) {
     if(shipIndex >= pArmy.length) return;
@@ -29,15 +30,15 @@ function handlePlacement(row, column) {
     }    
 }
 function startBattle() {
-    placeCPUShips(cBoard, cArmy); 
-    renderBoard(cBoard, 'cpu-board', handleAttack); 
+    placeCPUShips(cEasyBoard, cArmy); 
+    renderBoard(cEasyBoard, 'cpu-board', handleAttack); 
     document.querySelector('.controls').style.display = 'none';
 }
 function handleAttack(row, column) {
     if (isGameOver) return;
-    const result = receiveAttack(cBoard, row, column, cArmy);
+    const result = receiveAttack(cEasyBoard, row, column, cArmy);
     if (result === "invalid") return; 
-    renderBoard(cBoard, 'cpu-board', handleAttack); 
+    renderBoard(cEasyBoard, 'cpu-board', handleAttack); 
     if (defeated(cArmy)) {
         alert("VICTORY! You have defeated the enemy fleet!");
         isGameOver = true;
@@ -45,7 +46,7 @@ function handleAttack(row, column) {
     }
 
     setTimeout(() => {
-        botAttack(pBoard, pArmy);
+        easyBotAttack(pBoard, pArmy);
         renderBoard(pBoard, 'player-board'); 
         if (defeated(pArmy)) {
             alert("DEFEAT! You have been defeated by the enemy fleet.");
@@ -82,4 +83,4 @@ btnV.onclick = () => {
     btnH.classList.remove('active');
 };
 renderBoard(pBoard, 'player-board',handlePlacement);
-renderBoard(cBoard, 'cpu-board');
+renderBoard(cEasyBoard, 'cpu-board');
