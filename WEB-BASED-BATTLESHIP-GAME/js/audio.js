@@ -18,7 +18,7 @@ export const AudioController = {
         }
     },
     startBGM(effectName) {
-        sounds.bgm.volume = 0.3;
+        sounds.bgm.volume = 0.2;
         sounds.bgm.play();
     }
 }
