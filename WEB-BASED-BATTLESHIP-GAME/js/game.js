@@ -3,6 +3,7 @@ import { renderBoard } from "./ui.js";
 import { direction } from "./constants.js";
 import { playerShipArmy } from "./ship.js";
 import { placeCPUShips, easyBotAttack, hardBotAttack, memoryReset } from "./ai.js";
+import { AudioController } from "./audio.js";
 
 let currentDirection = direction.HORIZONTAL;
 const pArmy = playerShipArmy();
@@ -12,6 +13,15 @@ let isGameOver = false;
 
 const pBoard = createBoatData();
 const cBoard = createBoatData(); 
+const modalBtn = document.getElementById('modal-btn');
+
+modalBtn.addEventListener('click', () => {
+    document.getElementById('game-modal').classList.remove('active');
+    
+    AudioController.startBGM();
+    
+    statusText.innerText = "Status: Your turn! Attack the enemy.";
+});
 
 const statusText = document.getElementById('status-text');
 const diffSelect = document.getElementById('difficulty-select');
@@ -42,18 +52,35 @@ function handleAttack(row, col) {
     const result = receiveAttack(cBoard, row, col, cArmy);
     if (result === "invalid") return; 
 
+    if (result === "hit"){
+        AudioController.play('hit');
+    }
+    else if (result === "miss"){
+        AudioController.play('miss');
+    }
+
     renderBoard(cBoard, 'cpu-board', { onCellClick: handleAttack }); 
 
     if (defeated(cArmy)) {
+        AudioController.play('victory');
         alert("VICTORY!");
         isGameOver = true;
         memoryReset();
     } else {
+
         setTimeout(() => {
-            if (diffSelect.value === 'hard') hardBotAttack(pBoard, pArmy);
-            else easyBotAttack(pBoard, pArmy);
+            let botResult;
+            if (diffSelect.value === 'hard') botResult =  hardBotAttack(pBoard, pArmy);
+            else botResult = easyBotAttack(pBoard, pArmy);
+
+            if (botResult === "hit") AudioController.play('hit');
+            else if (botResult === "miss") AudioController.play('miss');
+
             renderBoard(pBoard, 'player-board', { pArmy });
-            if (defeated(pArmy)) alert("DEFEAT!");
+            if (defeated(pArmy)){
+                AudioController.play('defeat')
+                alert("DEFEAT!");
+            };
         }, 600);
     }
 }

@@ -1,3 +1,4 @@
+import { AudioController } from "./audio.js";
 import { board_size, cell_types } from "./constants.js";
 
 export function createBoatData() {
