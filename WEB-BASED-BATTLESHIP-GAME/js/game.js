@@ -43,7 +43,6 @@ function handlePlacement(row, col) {
     });
 
     if (success) {
-        AudioController.play('placingShip');
         shipIndex++;
         renderBoard(playerBoard, 'player-board', { onCellClick: handlePlacement, pArmy: playerArmy });
         if (shipIndex === playerArmy.length) {
