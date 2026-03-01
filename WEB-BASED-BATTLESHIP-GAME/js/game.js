@@ -6,85 +6,114 @@ import { placeCPUShips, easyBotAttack, hardBotAttack, memoryReset } from "./ai.j
 import { AudioController } from "./audio.js";
 
 let currentDirection = direction.HORIZONTAL;
-const pArmy = playerShipArmy();
-const cArmy = playerShipArmy();
+const playerArmy = playerShipArmy();
+const cpuArmy = playerShipArmy();
 let shipIndex = 0;
 let isGameOver = false;
+let canPlayerAttack = true; 
 
-const pBoard = createBoatData();
-const cBoard = createBoatData(); 
-const modalBtn = document.getElementById('modal-btn');
-
-modalBtn.addEventListener('click', () => {
-    document.getElementById('game-modal').classList.remove('active');
-    
-    AudioController.startBGM();
-    
-    statusText.innerText = "Status: Your turn! Attack the enemy.";
-});
+const playerBoard = createBoatData();
+const cpuBoard = createBoatData(); 
 
 const statusText = document.getElementById('status-text');
-const diffSelect = document.getElementById('difficulty-select');
+const difficultySelect = document.getElementById('difficulty-select');
+const startModal = document.getElementById('start-modal');
+const modalStartBtn = document.getElementById('modal-start-btn');
+const gameModal = document.getElementById('game-modal');
+const modalBtn = document.getElementById('modal-btn');
+
+modalStartBtn.addEventListener('click', () => {
+    startModal.style.display = 'none';
+    AudioController.startBGM();
+    statusText.innerText = "Status: Fleet ready! Click to place your ships.";
+});
+
+modalBtn.onclick = () => {
+    gameModal.style.display = 'none';
+};
 
 function handlePlacement(row, col) {
-    if (shipIndex >= pArmy.length || isGameOver) return;
-    const success = placeShip({ board: pBoard, ship: pArmy[shipIndex], row, col, dirVector: currentDirection });
+    if (shipIndex >= playerArmy.length || isGameOver) return;
+    const success = placeShip({ 
+        board: playerBoard, 
+        ship: playerArmy[shipIndex], 
+        row, 
+        col, 
+        dirVector: currentDirection 
+    });
 
     if (success) {
         AudioController.play('placingShip');
         shipIndex++;
-        renderBoard(pBoard, 'player-board', { onCellClick: handlePlacement, pArmy });
-        if (shipIndex === pArmy.length) {
+        renderBoard(playerBoard, 'player-board', { onCellClick: handlePlacement, pArmy: playerArmy });
+        if (shipIndex === playerArmy.length) {
             statusText.innerText = "Battle Start! Fire at the enemy!";
             startBattle();
         } else {
-            statusText.innerText = `Placing: ${pArmy[shipIndex].shipName}`;
+            statusText.innerText = `Placing: ${playerArmy[shipIndex].shipName}`;
         }
     }
 }
 
 function startBattle() {
-    AudioController.play('battlestart');
-    placeCPUShips(cBoard, cArmy); 
-    renderBoard(cBoard, 'cpu-board', { onCellClick: handleAttack }); 
+    placeCPUShips(cpuBoard, cpuArmy); 
+    renderBoard(cpuBoard, 'cpu-board', { onCellClick: handleAttack }); 
 }
 
 function handleAttack(row, col) {
-    if (isGameOver) return;
-    const result = receiveAttack(cBoard, row, col, cArmy);
+    if (isGameOver || !canPlayerAttack) return;
+
+    const result = receiveAttack(cpuBoard, row, col, cpuArmy);
     if (result === "invalid") return; 
 
-    if (result === "hit"){
-        AudioController.play('hit');
-    }
-    else if (result === "miss"){
-        AudioController.play('miss');
-    }
+    if (result === "hit" || result === "sunk") AudioController.play('hit');
+    else if (result === "miss") AudioController.play('miss');
 
-    renderBoard(cBoard, 'cpu-board', { onCellClick: handleAttack }); 
+    renderBoard(cpuBoard, 'cpu-board', { onCellClick: handleAttack }); 
 
-    if (defeated(cArmy)) {
-        AudioController.play('victory');
-        alert("VICTORY!");
+    if (defeated(cpuArmy)) {
         isGameOver = true;
+        canPlayerAttack = false;
+        AudioController.play('victory');
+        showGameModal("VICTORY!", "All enemy ships have been destroyed!");
         memoryReset();
-    } else {
-
-        setTimeout(() => {
-            let botResult;
-            if (diffSelect.value === 'hard') botResult =  hardBotAttack(pBoard, pArmy);
-            else botResult = easyBotAttack(pBoard, pArmy);
-
-            if (botResult === "hit") AudioController.play('hit');
-            else if (botResult === "miss") AudioController.play('miss');
-
-            renderBoard(pBoard, 'player-board', { pArmy });
-            if (defeated(pArmy)){
-                AudioController.play('defeat')
-                alert("DEFEAT!");
-            };
-        }, 600);
+        return;
     }
+
+    canPlayerAttack = false;
+    statusText.innerText = "Status: Enemy is calculating...";
+
+    setTimeout(() => {
+        if (isGameOver) return;
+
+        let botResult;
+        if (difficultySelect.value === 'hard') {
+            botResult = hardBotAttack(playerBoard, playerArmy);
+        } else {
+            botResult = easyBotAttack(playerBoard, playerArmy);
+        }
+
+        if (botResult === "hit" || botResult === "sunk") AudioController.play('hit');
+        else if (botResult === "miss") AudioController.play('miss');
+
+        renderBoard(playerBoard, 'player-board', { pArmy: playerArmy });
+
+        if (defeated(playerArmy)) {
+            isGameOver = true;
+            canPlayerAttack = false;
+            AudioController.play('defeat');
+            showGameModal("DEFEAT!", "Your entire fleet has been sunk!");
+        } else {
+            canPlayerAttack = true;
+            statusText.innerText = "Status: Your turn! Attack!";
+        }
+    }, 600);
+}
+
+function showGameModal(title, message) {
+    document.getElementById('modal-title').innerText = title;
+    document.getElementById('modal-message').innerText = message;
+    gameModal.style.display = 'flex';
 }
 
 document.getElementById('btn-horizontal').onclick = (e) => {
@@ -92,11 +121,12 @@ document.getElementById('btn-horizontal').onclick = (e) => {
     document.querySelectorAll('.button-group button').forEach(b => b.classList.remove('active'));
     e.target.classList.add('active');
 };
+
 document.getElementById('btn-vertical').onclick = (e) => {
     currentDirection = direction.VERTICAL;
     document.querySelectorAll('.button-group button').forEach(b => b.classList.remove('active'));
     e.target.classList.add('active');
 };
 
-renderBoard(pBoard, 'player-board', { onCellClick: handlePlacement, pArmy });
-renderBoard(cBoard, 'cpu-board');
+renderBoard(playerBoard, 'player-board', { onCellClick: handlePlacement, pArmy: playerArmy });
+renderBoard(cpuBoard, 'cpu-board');
