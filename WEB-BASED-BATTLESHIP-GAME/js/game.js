@@ -43,6 +43,7 @@ function handlePlacement(row, col) {
     });
 
     if (success) {
+        AudioController.play('placingShip');
         shipIndex++;
         renderBoard(playerBoard, 'player-board', { onCellClick: handlePlacement, pArmy: playerArmy });
         if (shipIndex === playerArmy.length) {
@@ -55,6 +56,7 @@ function handlePlacement(row, col) {
 }
 
 function startBattle() {
+    AudioController.play('battlestart');
     placeCPUShips(cpuBoard, cpuArmy); 
     renderBoard(cpuBoard, 'cpu-board', { onCellClick: handleAttack }); 
 }

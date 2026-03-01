@@ -1,9 +1,12 @@
 const sounds = {
     hit: document.getElementById('sfx-hit'),
     miss: document.getElementById('sfx-miss'),
-    sink: document.getElementById('sfx-sink'),
-    win: document.getElementById('sfx-win'),
+    placingShip: document.getElementById('sfx-placingShip'),
+    battlestart: document.getElementById('sfx-battlestart'),
+    defeat: document.getElementById('sfx-defeat'),
+    victory: document.getElementById('sfx-victory'),
     bgm: document.getElementById('bgm-ocean')
+
 };
 
 
