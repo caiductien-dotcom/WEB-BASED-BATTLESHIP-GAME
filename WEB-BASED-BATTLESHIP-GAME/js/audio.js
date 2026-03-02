@@ -13,6 +13,9 @@ const sounds = {
 
 export const AudioController = {
     play(effectName) {
+        if (effectName === 'victory' || effectName === 'defeat') {
+            this.stopBGM();
+        }
         const sound = document.getElementById(`sfx-${effectName}`);
         if (sound) {
             const temp = sound.cloneNode();
@@ -20,8 +23,12 @@ export const AudioController = {
             temp.play();
         }
     },
-    startBGM(effectName) {
+    startBGM() {
         sounds.bgm.volume = 0.2;
         sounds.bgm.play();
+    },
+    stopBGM() {
+        sounds.bgm.pause();
+        sounds.bgm.currentTime = 0;
     }
 }

@@ -1,6 +1,6 @@
 import { cell_types, direction } from "./constants.js";
 
-export function renderBoard(data, containerId, { onCellClick, pArmy } = {}) {
+export function renderBoard(data, containerId, { onCellClick, onMouseOver, onMouseOut, pArmy } = {}) {
     const boardElement = document.getElementById(containerId);
     if (!boardElement) return;
 
@@ -18,9 +18,9 @@ export function renderBoard(data, containerId, { onCellClick, pArmy } = {}) {
                 cell.classList.add("miss");
             }
 
-            if (onCellClick) {
-                cell.onclick = () => onCellClick(i, j);
-            }
+            if (onCellClick) cell.onclick = () => onCellClick(i, j);
+            if (onMouseOver) cell.onmouseover = () => onMouseOver(i, j);
+            if (onMouseOut)  cell.onmouseout = () => onMouseOut();
 
             boardElement.appendChild(cell); 
         }
@@ -50,4 +50,35 @@ export function renderBoard(data, containerId, { onCellClick, pArmy } = {}) {
             }
         });
     }
+}
+
+export function renderDock(army, currentDir) {
+    const dock = document.getElementById('ship-dock');
+    if (!dock) return;
+    dock.innerHTML = "";
+
+    army.forEach((ship, index) => {
+        if (!ship.placed) {
+            const shipDiv = document.createElement('div');
+            shipDiv.classList.add('dock-ship', ship.shipName.toLowerCase());
+            shipDiv.dataset.index = index; 
+
+            if (currentDir === direction.VERTICAL) {
+                shipDiv.classList.add('vertical');
+            }
+
+            shipDiv.draggable = true;
+            
+            shipDiv.ondragstart = (e) => {
+                e.dataTransfer.setData('shipIndex', e.target.dataset.index);
+                shipDiv.style.opacity = '0.5';
+            };
+            
+            shipDiv.ondragend = () => {
+                shipDiv.style.opacity = '1';
+            };
+            
+            dock.appendChild(shipDiv);
+        }
+    });
 }

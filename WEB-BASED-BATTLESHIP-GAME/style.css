@@ -9,20 +9,123 @@
 }
 
 body {
-    font-family: sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     display: flex;
     flex-direction: column;
     align-items: center;
     background: var(--sea-gradient);
+    min-height: 100vh;
+    margin: 0;
+    padding: 20px;
 }
 
-.game-container {
+#main-game-area {
+    width: 100%;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+}
+
+.controls {
+    margin: 20px 0;
     display: flex;
-    gap: 40px;
-    justify-content: center;
-    margin-top: 20px;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    background: rgba(255, 255, 255, 0.4);
+    padding: 25px 40px;
+    border-radius: 25px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+    backdrop-filter: blur(8px);
 }
 
+.button-group {
+    display: flex;
+    background: #fff;
+    padding: 5px;
+    border-radius: 50px;
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.button-group button {
+    padding: 10px 25px;
+    border: none;
+    border-radius: 50px;
+    background: transparent;
+    color: #666;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.button-group button.active {
+    background: var(--accent-teal);
+    color: white;
+    box-shadow: 0 4px 15px rgba(0, 172, 193, 0.3);
+}
+
+.difficulty-group {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-weight: bold;
+    color: #37474f;
+}
+
+#difficulty-select {
+    padding: 10px 20px;
+    border: 2px solid #fff;
+    border-radius: 50px;
+    background: white;
+    color: var(--accent-teal);
+    font-weight: bold;
+    cursor: pointer;
+    outline: none;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+#status-text {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #455a64;
+    letter-spacing: 0.5px;
+    margin: 0;
+    text-transform: uppercase;
+}
+
+.dock-container {
+    display: flex;
+    justify-content: center;
+    align-items: center; 
+    gap: 30px;
+    min-height: 180px; 
+    background: rgba(255, 255, 255, 0.4);
+    margin: 20px;
+    padding: 20px 50px;
+    border-radius: 25px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.dock-ship {
+    height: var(--cell-size);
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    cursor: grab;
+    transition: transform 0.2s ease;
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+}
+
+.dock-ship.vertical { transform: rotate(90deg); }
+.dock-ship:active { cursor: grabbing; }
+
+.carrier    { width: calc(var(--cell-size) * 5); background-image: url('./assets/carrier.png'); }
+.battleship { width: calc(var(--cell-size) * 4); background-image: url('./assets/battleship.png'); }
+.cruiser    { width: calc(var(--cell-size) * 3); background-image: url('./assets/cruiser.png'); }
+.submarine  { width: calc(var(--cell-size) * 3); background-image: url('./assets/submarine.png'); }
+.destroyer  { width: calc(var(--cell-size) * 2); background-image: url('./assets/destroyer.png'); }
+
+.game-container { display: flex; gap: 40px; justify-content: center; margin-top: 20px; }
 .board {
     position: relative; 
     display: grid;
@@ -30,164 +133,68 @@ body {
     grid-template-rows: repeat(10, var(--cell-size));
     background-color: #81d4fa; 
     border: 3px solid var(--border-color);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-    overflow: hidden;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    border-radius: 4px;
 }
 
 .cell {
-    width: var(--cell-size);
-    height: var(--cell-size);
+    width: var(--cell-size); height: var(--cell-size);
     background-color: rgba(255, 255, 255, 0.1); 
     border: 1px solid rgba(255, 255, 255, 0.2); 
     box-sizing: border-box;
-    z-index: 1; 
-    transition: all 0.2s ease;
+    transition: background-color 0.2s;
 }
 
 .ship-display {
-    position: absolute; 
-    background-size: cover; 
-    background-repeat: no-repeat;
-    background-position: center;
-    pointer-events: none; 
-    z-index: 5;
-    transition: all 0.2s ease; 
+    position: absolute; background-size: contain; background-repeat: no-repeat;
+    background-position: center; pointer-events: none; z-index: 5;
 }
 
-.ship-display.carrier    { background-image: url('./assets/carrier.png'); }
-.ship-display.battleship { background-image: url('./assets/battleship.png'); }
-.ship-display.cruiser    { background-image: url('./assets/cruiser.png'); }
-.ship-display.submarine  { background-image: url('./assets/submarine.png'); }
-.ship-display.destroyer  { background-image: url('./assets/destroyer.png'); }
+.ship-display.vertical { transform: rotate(90deg); transform-origin: top left; }
 
-.ship-display.vertical {
-    transform: rotate(90deg);
-    transform-origin: top left; 
-}
-
-.cell.hit {
-    background-color: rgba(255, 0, 0, 0.4); 
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 10; 
-}
-.cell.hit::after { 
-    content: '💥'; 
-    font-size: 20px; 
-}
-
-.cell.miss {
-    background-color: #120979; 
-    opacity: 0.6;
-    z-index: 10;
-}
-.cell:hover {
-    background-color: rgba(0, 150, 136, 0.4); 
-    box-shadow: inset 0 0 10px rgba(0, 172, 193, 0.6); 
-    cursor: cell; 
-    transition: all 0.1s ease-out; 
-    z-index: 2; 
-}
-
-.controls { 
-    margin: 30px; 
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    align-items: center;
-}
-
-.button-group {
-    display: flex;
-    gap: 10px;
-}
-
-.button-group button, .difficulty-btn {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 8px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    background: #ffffff;
-    color: var(--accent-teal);
-    box-shadow: 0 4px 0px #cfd8dc;
-}
-
-.button-group button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 0px #cfd8dc;
-}
-
-.button-group button.active { 
-    background: var(--accent-teal); 
-    color: white; 
-    box-shadow: 0 4px 0px #006064;
-    transform: translateY(2px);
-}
-
-.difficulty-select-wrapper {
-    margin-top: 10px;
-    display: flex;
-    gap: 10px;
-    align-items: center;
-}
-
-#difficulty-select {
-    padding: 8px 15px;
-    border-radius: 8px;
-    border: 2px solid var(--accent-teal);
-    background: white;
-    font-weight: bold;
-    color: var(--accent-teal);
-    outline: none;
-    cursor: pointer;
-    box-shadow: 0 4px 0px #cfd8dc;
-    transition: all 0.3s;
-}
-#difficulty-select:active {
-    transform: translateY(2px);
-    box-shadow: 0 2px 0px #cfd8dc;
-}
+.cell.hit { background-color: rgba(255, 0, 0, 0.4); display: flex; justify-content: center; align-items: center; z-index: 6; }
+.cell.hit::after { content: '💥'; font-size: 20px; }
+.cell.miss { background-color: #120979; opacity: 0.6; z-index: 6; }
+.cell:hover { background-color: rgba(0, 150, 136, 0.4); cursor: cell; }
+.cell.preview-valid { background-color: rgba(46, 204, 113, 0.6) !important; }
+.cell.preview-invalid { background-color: rgba(231, 76, 60, 0.6) !important; }
 
 .modal-overlay {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.8); 
-    display: none;
-    justify-content: center; 
-    align-items: center;
-    z-index: 100;
-}
-.modal-content { 
-    background: white; 
-    padding: 40px; 
-    border-radius: 10px;
-    text-align: center;
-}
-.start-game-btn {
-    padding: 15px 40px;
-    font-size: 1.2rem;
-    background: var(--accent-teal);
-    color: white;
-    border: none;
-    border-radius: 50px;
-    cursor: pointer;
-    font-weight: bold;
-    box-shadow: 0 6px 0px #006064;
-    transition: all 0.2s ease;
-}
-
-.start-game-btn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 9px 0px #006064;
-    background: #00bcd4;
-}
-
-.start-game-btn:active {
-    transform: translateY(3px);
-    box-shadow: 0 2px 0px #006064;
-}
-#start-modal {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.85);
+    display: none; justify-content: center; align-items: center; z-index: 100;
     backdrop-filter: blur(10px);
 }
+.modal-content { 
+    background: white; padding: 50px; border-radius: 30px; text-align: center;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+}
+
+.modal-content h2 { font-weight: 900; letter-spacing: -1px; margin-bottom: 15px; }
+
+.start-game-btn {
+    padding: 18px 70px;
+    font-size: 1.3rem;
+    background: var(--accent-teal);
+    color: white; border: none;
+    border-radius: 50px; 
+    cursor: pointer; font-weight: bold;
+    box-shadow: 0 8px 20px rgba(0, 172, 193, 0.4);
+    transition: all 0.3s;
+    text-transform: uppercase;
+}
+
+.start-game-btn:hover { background: #00bcd4; transform: scale(1.05); }
+.start-game-btn:active { transform: translateY(4px); box-shadow: 0 2px 0px #006064; }
+
+#modal-btn {
+    padding: 12px 40px;
+    border-radius: 50px;
+    border: 2px solid var(--accent-teal);
+    background: transparent;
+    color: var(--accent-teal);
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+#modal-btn:hover { background: var(--accent-teal); color: white; }
