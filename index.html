@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Battleship Game Pro</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>BATTLESHIP GAME</h1>
+
+    <div id="start-modal" class="modal-overlay" style="display: flex;">
+        <div class="modal-content">
+            <h2 id="start-title">BATTLESHIP COMMAND</h2>
+            <p>Ready to engage the enemy fleet?</p>
+            <button id="modal-start-btn" class="start-game-btn">START GAME</button>
+        </div>
+    </div>
+
+    <div id="main-game-area" style="display: none;">
+        <div class="controls">
+            <div class="button-group">
+                <button id="btn-horizontal" class="active">Horizontal</button>
+                <button id="btn-vertical">Vertical</button>
+            </div>
+
+            <div class="difficulty-group">
+                <label for="difficulty-select">Difficulty:</label>
+                <select id="difficulty-select">
+                    <option value="easy">Easy (Random)</option>
+                    <option value="hard" selected>Hard (AI Hunter)</option>
+                </select>
+            </div>
+
+            <p id="status-text">Status: Preparing fleet...</p>
+        </div>
+
+        <div id="ship-dock" class="dock-container"></div>
+
+        <div class="game-container">
+            <div class="board-wrapper">
+                <h3>Your Fleet</h3>
+                <div id="player-board" class="board"></div>
+            </div>
+
+            <div class="board-wrapper">
+                <h3>Enemy Fleet</h3>
+                <div id="cpu-board" class="board"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="game-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h2 id="modal-title">Notification</h2>
+            <p id="modal-message"></p>
+            <button id="modal-btn">Confirm</button>
+        </div>
+    </div>
+
+    <div id="audio-container" style="display: none;">
+        <audio id="sfx-hit" src="./assets/sfx/hit.mp3" preload="auto"></audio>
+        <audio id="sfx-miss" src="./assets/sfx/miss.mp3" preload="auto"></audio>
+        <audio id="sfx-placingShip" src="./assets/sfx/placingShip.mp3" preload="auto"></audio>
+        <audio id="sfx-battlestart" src="./assets/sfx/battlestart.mp3" preload="auto"></audio>
+        <audio id="sfx-defeat" src="./assets/sfx/defeat.mp3" preload="auto"></audio>
+        <audio id="sfx-victory" src="./assets/sfx/victory.mp3" preload="auto"></audio>
+        <audio id="bgm-ocean" src="./assets/sfx/bgm.mp3" preload="auto" loop></audio>
+    </div>
+
+    <script type="module" src="./js/game.js"></script>
+    <script type="module" src="./js/audio.js"></script>
+</body>
+</html>
