@@ -125,17 +125,33 @@ function getNext(currentPosition, currentDirection, originHit){
     };
 }
 
+function shiftRandomElement(arr) {
+  // 1. Generate a random index
+  const randomIndex = Math.floor(Math.random() * arr.length);
+
+  // 2. Remove the element at the random index using splice()
+  const removedElements = arr.splice(randomIndex, 1);
+
+  // 3. Return the removed element (the first and only item in the removedElements array)
+  return removedElements[0];
+}
+
+
+
 function destroyTarget(board, army){
     let target = null;
 
     if (AIMemory.lineQueue.length > 0){
-        target = AIMemory.lineQueue.shift();
+        target = shiftRandomElement(AIMemory.lineQueue);
     }
     else if (AIMemory.potentialQueue.length > 0){
-        target = AIMemory.potentialQueue.shift();
+        target = shiftRandomElement(AIMemory.potentialQueue);
     }
 
-    if (!target) return "back-to-huntmode";
+    if (!target){
+        AIMemory.originHit = null;
+        return "back-to-huntmode";
+    } 
 
     const result = receiveAttack(board, target.row, target.column, army);
 
