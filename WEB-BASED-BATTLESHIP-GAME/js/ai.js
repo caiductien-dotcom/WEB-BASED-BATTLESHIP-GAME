@@ -152,7 +152,9 @@ function destroyTarget(board, army){
         const next = getNext(target, AIMemory.currentDirection, AIMemory.originHit);
         if (isValid(board, next)) AIMemory.lineQueue.unshift(next);
     }
-    else if (result === "sunk") {
+    else if (result === "miss") {
+        AIMemory.originHit = null;
+    } else if (result === "sunk") {
         memoryReset();
     }
     return result;
@@ -179,14 +181,36 @@ export function hardBotAttack(pBoard, pArmy){
                 if (isValid(pBoard, n)) AIMemory.potentialQueue.push(n);
             }
         }
+        console.log('AI Memory Hunting Mode:', {
+            originHit: AIMemory.originHit,
+            currentDirection: AIMemory.currentDirection,
+            potentialQueue: [...AIMemory.potentialQueue],
+            lineQueue: [...AIMemory.lineQueue],
+            result: result
+        });
         return result;
     }
     let result = destroyTarget(pBoard, pArmy);
     if (result === "back-to-huntmode") {
         const target = huntingTarget(pBoard);
-        if (target) return receiveAttack(pBoard, target.row, target.column, pArmy);
+        if (target) {
+            console.log('AI Memory Back To Hunt:', {
+            originHit: AIMemory.originHit,
+            currentDirection: AIMemory.currentDirection,
+            potentialQueue: [...AIMemory.potentialQueue],
+            lineQueue: [...AIMemory.lineQueue],
+            result: result
+            });
+            result = receiveAttack(pBoard, target.row, target.column, pArmy);    
+        }
     }
-    
+    console.log('AI Memory Destroy Mode:', {
+        originHit: AIMemory.originHit,
+        currentDirection: AIMemory.currentDirection,
+        potentialQueue: [...AIMemory.potentialQueue],
+        lineQueue: [...AIMemory.lineQueue],
+        result: result
+    });
     return result;
 }
 
