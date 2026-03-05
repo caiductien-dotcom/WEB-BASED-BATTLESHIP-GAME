@@ -64,6 +64,39 @@ function initDragAndDrop() {
         shipEl.addEventListener('dragstart', (e) => {
             draggedShipIndex = e.target.getAttribute('data-index') || Array.from(dockShips).indexOf(e.target);
             e.dataTransfer.setData('shipIndex', draggedShipIndex);
+
+            const ship = playerArmy[draggedShipIndex];
+            const ghost = document.createElement('div');
+            ghost.style.position = 'absolute';
+            ghost.style.top = '-1000px';
+
+            if (currentDirection === direction.VERTICAL) {
+                ghost.style.width = '40px';
+                ghost.style.height = `${ship.shipSize * 40}px`;
+                
+                const inner = document.createElement('div');
+                inner.style.width = `${ship.shipSize * 40}px`;
+                inner.style.height = '40px';
+                inner.style.backgroundImage = window.getComputedStyle(e.target).backgroundImage;
+                inner.style.backgroundSize = '100% 100%';
+                inner.style.backgroundRepeat = 'no-repeat';
+                inner.style.transform = 'rotate(90deg)';
+                inner.style.transformOrigin = 'top left';
+                inner.style.position = 'absolute';
+                inner.style.left = '40px';
+                
+                ghost.appendChild(inner);
+            } else {
+                ghost.style.width = `${ship.shipSize * 40}px`;
+                ghost.style.height = '40px';
+                ghost.style.backgroundImage = window.getComputedStyle(e.target).backgroundImage;
+                ghost.style.backgroundSize = '100% 100%';
+                ghost.style.backgroundRepeat = 'no-repeat';
+            }
+
+            document.body.appendChild(ghost);
+            e.dataTransfer.setDragImage(ghost, 20, 20);
+            setTimeout(() => document.body.removeChild(ghost), 0);
         });
     });
 
@@ -106,7 +139,6 @@ function initDragAndDrop() {
         };
     });
 }
-
 function refreshSetupUI() {
     renderBoard(playerBoard, 'player-board', { pArmy: playerArmy });
     renderDock(playerArmy, currentDirection);
