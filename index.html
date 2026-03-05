@@ -19,12 +19,18 @@
 
     <div id="main-game-area" style="display: none;">
         
-        <div class="controls">
-            <div class="button-group">
-                <button id="btn-horizontal" class="active">Horizontal</button>
-                <button id="btn-vertical">Vertical</button>
+        <div class="setup-section">
+            <div id="ship-dock" class="dock-container"></div>
+            
+            <div class="orientation-wrapper">
+                <div class="button-group">
+                    <button id="btn-horizontal" class="active">Horizontal</button>
+                    <button id="btn-vertical">Vertical</button>
+                </div>
             </div>
+        </div>
 
+        <div class="game-info">
             <div class="difficulty-group">
                 <label for="difficulty-select">Difficulty:</label>
                 <select id="difficulty-select">
@@ -32,11 +38,8 @@
                     <option value="hard" selected>Hard (AI Hunter)</option>
                 </select>
             </div>
-
             <p id="status-text">Status: Drag ships to your board!</p>
         </div>
-
-        <div id="ship-dock" class="dock-container"></div>
 
         <div class="game-container">
             <div class="board-wrapper">
