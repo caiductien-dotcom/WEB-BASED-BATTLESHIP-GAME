@@ -19,9 +19,19 @@
 
     <div id="main-game-area" style="display: none;">
         
+        <div class="top-info">
+            <div class="difficulty-group">
+                <label for="difficulty-select">Difficulty:</label>
+                <select id="difficulty-select">
+                    <option value="easy">Easy (Random)</option>
+                    <option value="hard" selected>Hard (AI Hunter)</option>
+                </select>
+            </div>
+            <p id="status-text">Status: Preparing fleet...</p>
+        </div>
+
         <div class="setup-section">
             <div id="ship-dock" class="dock-container"></div>
-            
             <div class="orientation-wrapper">
                 <div class="button-group">
                     <button id="btn-horizontal" class="active">Horizontal</button>
@@ -30,23 +40,11 @@
             </div>
         </div>
 
-        <div class="game-info">
-            <div class="difficulty-group">
-                <label for="difficulty-select">Difficulty:</label>
-                <select id="difficulty-select">
-                    <option value="easy">Easy (Random)</option>
-                    <option value="hard" selected>Hard (AI Hunter)</option>
-                </select>
-            </div>
-            <p id="status-text">Status: Drag ships to your board!</p>
-        </div>
-
         <div class="game-container">
             <div class="board-wrapper">
                 <h3>Your Fleet</h3>
                 <div id="player-board" class="board"></div>
             </div>
-
             <div class="board-wrapper">
                 <h3>Enemy Fleet</h3>
                 <div id="cpu-board" class="board"></div>
