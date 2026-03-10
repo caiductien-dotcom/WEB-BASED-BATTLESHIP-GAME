@@ -276,3 +276,28 @@ h1 {
     transform: translateY(4px); 
     box-shadow: 0 2px 0px #006064; 
 }
+.fleet-hidden .ship-display {
+    opacity: 0 !important;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+/* chinh nut an hien */
+.toggle-btn {
+    padding: 8px 16px;
+    border-radius: 50px;
+    border: 2px solid var(--accent-teal);
+    background: white;
+    color: var(--accent-teal);
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.9rem;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.toggle-btn:hover {
+    background: var(--accent-teal);
+    color: white;
+    transform: translateY(-2px);
+}

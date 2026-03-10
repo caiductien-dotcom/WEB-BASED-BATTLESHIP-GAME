@@ -12,8 +12,19 @@
     <div id="start-modal" class="modal-overlay" style="display: flex;">
         <div class="modal-content">
             <h2 id="start-title">BATTLESHIP COMMAND</h2>
-            <p>Ready to engage the enemy fleet?</p>
-            <button id="modal-start-btn" class="start-game-btn">START GAME</button>
+            <p>Select your engagement mode:</p>
+            <div style="display: flex; gap: 20px; justify-content: center; margin-top: 20px;">
+                <button id="btn-single-player" class="start-game-btn">VS A.I</button>
+                <button id="btn-local-pvp" class="start-game-btn" style="background: #e74c3c; box-shadow: 0 8px 0px #c0392b;">LOCAL PVP</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="fog-of-war-modal" class="modal-overlay" style="display: none; z-index: 200; backdrop-filter: blur(15px);">
+        <div class="modal-content" style="background: rgba(255, 255, 255, 0.9);">
+            <h2 id="fog-title" style="font-size: 2.5rem; color: #e74c3c;">PLAYER 2'S TURN</h2>
+            <p>Please pass the device to your opponent. No peeking!</p>
+            <button id="btn-ready" class="start-game-btn" style="margin-top: 20px;">I'M READY</button>
         </div>
     </div>
 
@@ -42,9 +53,13 @@
 
         <div class="game-container">
             <div class="board-wrapper">
-                <h3>Your Fleet</h3>
-                <div id="player-board" class="board"></div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <h3 style="margin: 0;">Your Fleet</h3>
+                    <button id="toggle-fleet-btn" class="toggle-btn">👁️ Show Fleet</button>
+                </div>
+                <div id="player-board" class="board fleet-hidden"></div>
             </div>
+            
             <div class="board-wrapper">
                 <h3>Enemy Fleet</h3>
                 <div id="cpu-board" class="board"></div>
