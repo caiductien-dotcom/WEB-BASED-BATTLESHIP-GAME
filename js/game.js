@@ -86,19 +86,20 @@ function showFog(title) {
 btnReady.addEventListener('click', () => {
     fogModal.style.display = 'none';
     
-    //giau tau trong khi ban nhau
-    if (shipDock.style.display === 'none') {
+    if (G_STATE.phase === phase.BATTLE) {
         G_STATE.players[1].boardDOM.classList.add('fleet-hidden');
         G_STATE.players[2].boardDOM.classList.add('fleet-hidden');
+        
         toggleFleetBtn.innerText = "👁️ Show Fleet";
         toggleFleetBtn.style.background = "white";
         toggleFleetBtn.style.color = "var(--accent-teal)";
+        statusText.innerText = `Player ${G_STATE.currentPlayer}'s Turn: Attack!`;
     } else {
         G_STATE.players[1].boardDOM.classList.remove('fleet-hidden');
         G_STATE.players[2].boardDOM.classList.remove('fleet-hidden');
     }
     
-    if (isPvP && !isGameOver && shipDock.style.display !== 'none') {
+    if (isPvP && !isGameOver && G_STATE.phase === phase.SETUP) {
         refreshSetupUI();
     }
 });
@@ -138,7 +139,7 @@ function handleHover(row, col) {
     for (let i = 0; i < ship.shipSize; i++) {
         const r = row + i * currentDirection.dy;
         const c = col + i * currentDirection.dx;
-        if (r >= board_size && r < board_size && c >= 0 && c < board_size) {
+        if (r >= 0 && r < board_size && c >= 0 && c < board_size) {
             cells[r * board_size + c].classList.add(isValid ? 'preview-valid' : 'preview-invalid');
         }
     }
@@ -252,7 +253,6 @@ function refreshSetupUI() {
     
     renderBoard(pData.board, pData.boardDOM.id, { pArmy: pData.army });
     renderDock(pData.army, currentDirection);
-
     initDragAndDrop();
     
     if (pData.army.every(s => s.placed)) {
@@ -267,7 +267,6 @@ function refreshSetupUI() {
         }
     }
 }
-
 function startBattle() {
     AudioController.play('battlestart');
     shipDock.style.display = 'none';

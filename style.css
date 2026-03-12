@@ -301,3 +301,18 @@ h1 {
     color: white;
     transform: translateY(-2px);
 }
+#fog-of-war-modal {
+    background: radial-gradient(circle, rgba(44, 62, 80, 0.9) 0%, rgba(0, 0, 0, 0.95) 100%);
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.modal-content h2#fog-title {
+    text-shadow: 0 0 10px rgba(231, 76, 60, 0.5);
+    letter-spacing: 3px;
+    margin-bottom: 20px;
+}
