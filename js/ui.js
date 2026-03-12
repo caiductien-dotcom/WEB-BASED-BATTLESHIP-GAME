@@ -28,22 +28,25 @@ export function renderBoard(data, containerId, { onCellClick, onMouseOver, onMou
 
     const cellSize = 40;
 
-    if (containerId === 'player-board' && pArmy) {
+    if (pArmy) {
         pArmy.forEach(ship => {
-            if (ship.placed) {
-                const { row, col, direction: shipDir } = ship.placed;
+            if (ship.placed && ship.position && ship.position.length > 0) {
+                const head = ship.position[0];
+                const isVertical = ship.position.length > 1 && ship.position[0].col === ship.position[1].col;
+                
                 const shipEl = document.createElement("div");
-
                 shipEl.classList.add("ship-display", ship.shipName.toLowerCase());
 
-                shipEl.style.top = `${row * cellSize}px`;
-                shipEl.style.left = `${col * cellSize}px`;
-                shipEl.style.width = `${ship.shipSize * cellSize}px`;
-                shipEl.style.height = `${cellSize}px`;
+                shipEl.style.top = `${head.row * cellSize}px`;
+                shipEl.style.left = `${head.col * cellSize}px`;
 
-                if (shipDir === direction.VERTICAL) {
+                if (isVertical) {
                     shipEl.classList.add("vertical");
-                    shipEl.style.left = `${(col + 1) * cellSize}px`;
+                    shipEl.style.width = `${cellSize}px`;
+                    shipEl.style.height = `${ship.shipSize * cellSize}px`;
+                } else {
+                    shipEl.style.width = `${ship.shipSize * cellSize}px`;
+                    shipEl.style.height = `${cellSize}px`;
                 }
 
                 boardElement.appendChild(shipEl);

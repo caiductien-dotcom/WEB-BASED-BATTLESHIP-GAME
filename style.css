@@ -169,6 +169,12 @@ h1 {
     box-shadow: 0 10px 25px rgba(0,0,0,0.1);
     padding: 0;
 }
+#player-board, #cpu-board {
+    position: relative; 
+    display: grid;
+    grid-template-columns: repeat(10, var(--cell-size));
+    grid-template-rows: repeat(10, var(--cell-size));
+}
 
 .cell {
     width: var(--cell-size);
@@ -183,6 +189,7 @@ h1 {
     background-repeat: no-repeat;
     pointer-events: none;
     z-index: 5;
+    transition: all 0.1s ease-out; 
 }
 
 .ship-display.vertical { 
