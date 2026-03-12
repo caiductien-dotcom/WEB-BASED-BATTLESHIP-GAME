@@ -1,22 +1,32 @@
 import { createBoatData, placeShip, receiveAttack, defeated, isValidPlacement } from "./board.js";
 import { renderBoard, renderDock } from "./ui.js"; 
-import { direction } from "./constants.js";
+import { board_size, direction, phase } from "./constants.js";
 import { playerShipArmy } from "./ship.js";
 import { placeCPUShips, easyBotAttack, hardBotAttack, memoryReset } from "./ai.js";
 import { AudioController } from "./audio.js";
 
+const G_STATE = {
+    players: {
+        1: { 
+            board: createBoatData(), 
+            army: playerShipArmy(), 
+            boardDOM: document.getElementById('player-board') 
+        },
+        2: { 
+            board: createBoatData(), 
+            army: playerShipArmy(), 
+            boardDOM: document.getElementById('cpu-board') 
+        }
+    },
+    phase: phase.SETUP,
+    currentPlayer: 1
+};
+
 let currentDirection = direction.HORIZONTAL;
-const playerArmy = playerShipArmy();
-const cpuArmy = playerShipArmy(); 
 let isGameOver = false;
 let canPlayerAttack = true; 
 let draggedShipIndex = null;
-
 let isPvP = false;
-let currentPlayer = 1; 
-
-const playerBoard = createBoatData();
-const cpuBoard = createBoatData(); 
 
 const statusText = document.getElementById('status-text');
 const difficultySelect = document.getElementById('difficulty-select');
@@ -31,8 +41,6 @@ const fogModal = document.getElementById('fog-of-war-modal');
 const fogTitle = document.getElementById('fog-title');
 const btnReady = document.getElementById('btn-ready');
 const toggleFleetBtn = document.getElementById('toggle-fleet-btn');
-const playerBoardDOM = document.getElementById('player-board');
-const cpuBoardDOM = document.getElementById('cpu-board');
 const shipDock = document.getElementById('ship-dock');
 
 btnSinglePlayer.addEventListener('click', () => {
@@ -42,8 +50,8 @@ btnSinglePlayer.addEventListener('click', () => {
     
     // Logic: an nut tang hinh
     toggleFleetBtn.style.display = 'none'; 
-    playerBoardDOM.classList.remove('fleet-hidden');
-    cpuBoardDOM.classList.remove('fleet-hidden');
+    G_STATE.players[1].boardDOM.classList.remove('fleet-hidden');
+    G_STATE.players[2].boardDOM.classList.remove('fleet-hidden');
 
     AudioController.startBGM();
     statusText.innerText = "Status: Drag ships to your board!";
@@ -51,15 +59,15 @@ btnSinglePlayer.addEventListener('click', () => {
 
 btnLocalPvP.addEventListener('click', () => {
     isPvP = true;
-    currentPlayer = 1;
+    G_STATE.currentPlayer = 1;
     startModal.style.display = 'none';
     mainGameArea.style.display = 'flex';
     document.querySelector('.difficulty-group').style.display = 'none';
     
     // Logic: hien nut tang hinh khi PvP
     toggleFleetBtn.style.display = 'block'; 
-    playerBoardDOM.classList.remove('fleet-hidden');
-    cpuBoardDOM.classList.remove('fleet-hidden');
+    G_STATE.players[1].boardDOM.classList.remove('fleet-hidden');
+    G_STATE.players[2].boardDOM.classList.remove('fleet-hidden');
 
     statusText.innerText = "Player 1: Set up your fleet!";
     AudioController.startBGM();
@@ -80,14 +88,14 @@ btnReady.addEventListener('click', () => {
     
     //giau tau trong khi ban nhau
     if (shipDock.style.display === 'none') {
-        playerBoardDOM.classList.add('fleet-hidden');
-        cpuBoardDOM.classList.add('fleet-hidden');
+        G_STATE.players[1].boardDOM.classList.add('fleet-hidden');
+        G_STATE.players[2].boardDOM.classList.add('fleet-hidden');
         toggleFleetBtn.innerText = "👁️ Show Fleet";
         toggleFleetBtn.style.background = "white";
         toggleFleetBtn.style.color = "var(--accent-teal)";
     } else {
-        playerBoardDOM.classList.remove('fleet-hidden');
-        cpuBoardDOM.classList.remove('fleet-hidden');
+        G_STATE.players[1].boardDOM.classList.remove('fleet-hidden');
+        G_STATE.players[2].boardDOM.classList.remove('fleet-hidden');
     }
     
     if (isPvP && !isGameOver && shipDock.style.display !== 'none') {
@@ -97,10 +105,10 @@ btnReady.addEventListener('click', () => {
 
 toggleFleetBtn.addEventListener('click', () => {
     // an hien ca hai bang
-    playerBoardDOM.classList.toggle('fleet-hidden');
-    cpuBoardDOM.classList.toggle('fleet-hidden');
+    G_STATE.players[1].boardDOM.classList.toggle('fleet-hidden');
+    G_STATE.players[2].boardDOM.classList.toggle('fleet-hidden');
     
-    if (playerBoardDOM.classList.contains('fleet-hidden')) {
+    if (G_STATE.players[1].boardDOM.classList.contains('fleet-hidden')) {
         toggleFleetBtn.innerText = "👁️ Show Fleet";
         toggleFleetBtn.style.background = "white";
         toggleFleetBtn.style.color = "var(--accent-teal)";
@@ -111,25 +119,27 @@ toggleFleetBtn.addEventListener('click', () => {
     }
 });
 
+
+
+
 function handleHover(row, col) {
     if (draggedShipIndex === null || isGameOver) return;
 
-    let activeArmy = (isPvP && currentPlayer === 2) ? cpuArmy : playerArmy;
-    let activeBoard = (isPvP && currentPlayer === 2) ? cpuBoard : playerBoard;
+    const pData = G_STATE.players[G_STATE.currentPlayer];
+    const ship = pData.army[draggedShipIndex];
     
-    const ship = activeArmy[draggedShipIndex];
-    let targetBoardId = (isPvP && currentPlayer === 2) ? '#cpu-board .cell' : '#player-board .cell';
+    const targetBoardId = (G_STATE.currentPlayer === 1) ? '#player-board .cell' : '#cpu-board .cell';    
     const cells = document.querySelectorAll(targetBoardId);
     
     cells.forEach(c => c.classList.remove('preview-valid', 'preview-invalid'));
 
-    const isValid = isValidPlacement(activeBoard, ship.shipSize, row, col, currentDirection);
+    const isValid = isValidPlacement(pData.board, ship.shipSize, row, col, currentDirection);
     
     for (let i = 0; i < ship.shipSize; i++) {
         const r = row + i * currentDirection.dy;
         const c = col + i * currentDirection.dx;
-        if (r >= 0 && r < 10 && c >= 0 && c < 10) {
-            cells[r * 10 + c].classList.add(isValid ? 'preview-valid' : 'preview-invalid');
+        if (r >= board_size && r < board_size && c >= 0 && c < board_size) {
+            cells[r * board_size + c].classList.add(isValid ? 'preview-valid' : 'preview-invalid');
         }
     }
 }
@@ -147,7 +157,7 @@ function initDragAndDrop() {
             draggedShipIndex = parseInt(e.target.dataset.index) || Array.from(dockShips).indexOf(e.target);
             e.dataTransfer.setData('shipIndex', draggedShipIndex);
 
-            let activeArmy = (isPvP && currentPlayer === 2) ? cpuArmy : playerArmy;
+            let activeArmy = (G_STATE.currentPlayer === 2) ? G_STATE.players[2].army : G_STATE.players[1].army;
             const ship = activeArmy[draggedShipIndex];
             
             const ghost = document.createElement('div');
@@ -184,8 +194,17 @@ function initDragAndDrop() {
         });
     });
 
-    let targetBoardId = (isPvP && currentPlayer === 2) ? '#cpu-board .cell' : '#player-board .cell';
-    const cells = document.querySelectorAll(targetBoardId);
+    const pData = G_STATE.players[G_STATE.currentPlayer];
+    console.log("Đang khởi tạo cho Player:", G_STATE.currentPlayer);
+    console.log("Board DOM:", pData.boardDOM);
+    const cells = pData.boardDOM.querySelectorAll('.cell');
+    
+
+    cells.forEach((cell) => {
+        cell.onmouseover = null;
+        cell.ondragover = null;
+        cell.ondrop = null;
+    });
     
     cells.forEach((cell, index) => {
         const r = Math.floor(index / 10);
@@ -203,17 +222,16 @@ function initDragAndDrop() {
         cell.ondrop = (e) => {
             e.preventDefault();
             clearHover();
-            
-            const shipIdx = parseInt(e.dataTransfer.getData('shipIndex'));
-            
-            let activeArmy = (isPvP && currentPlayer === 2) ? cpuArmy : playerArmy;
-            let activeBoard = (isPvP && currentPlayer === 2) ? cpuBoard : playerBoard;
-            const ship = activeArmy[shipIdx];
 
-            if (!ship) return; 
+            const shipIdx = parseInt(e.dataTransfer.getData('shipIndex'));
+
+            const activePlayer = G_STATE.players[G_STATE.currentPlayer];
+            const ship = activePlayer.army[shipIdx];
+
+            if (!ship) return;
 
             const success = placeShip({
-                board: activeBoard,
+                board: activePlayer.board,
                 ship: ship,
                 row: r,
                 col: c,
@@ -230,29 +248,22 @@ function initDragAndDrop() {
 }
 
 function refreshSetupUI() {
-    let activeArmy = (isPvP && currentPlayer === 2) ? cpuArmy : playerArmy;
-    let activeBoard = (isPvP && currentPlayer === 2) ? cpuBoard : playerBoard;
-    let targetDOM = (isPvP && currentPlayer === 2) ? 'cpu-board' : 'player-board';
+    const pData = G_STATE.players[G_STATE.currentPlayer];
+    
+    renderBoard(pData.board, pData.boardDOM.id, { pArmy: pData.army });
+    renderDock(pData.army, currentDirection);
 
-    renderBoard(activeBoard, targetDOM, { pArmy: activeArmy });
-    renderDock(activeArmy, currentDirection);
     initDragAndDrop();
     
-    if (activeArmy.every(s => s.placed)) {
-        if (!isPvP) {
-            statusText.innerText = "Status: All ships deployed! Battle Start!";
-            startBattle();
+    if (pData.army.every(s => s.placed)) {
+        if (isPvP && G_STATE.currentPlayer === 1) {
+            G_STATE.currentPlayer = 2;
+            G_STATE.players[1].boardDOM.parentElement.style.display = 'none';
+            G_STATE.players[2].boardDOM.parentElement.style.display = 'block';
+            showFog("PLAYER 2 SETUP PHASE");
         } else {
-            if (currentPlayer === 1) {
-                currentPlayer = 2;
-                statusText.innerText = "Player 2: Set up your fleet!";
-                document.getElementById('player-board').parentElement.style.display = 'none';
-                document.getElementById('cpu-board').parentElement.style.display = 'block';
-                showFog("PLAYER 2 SETUP PHASE");
-            } else {
-                statusText.innerText = "Status: Battle Start!";
-                startBattle();
-            }
+            G_STATE.phase = phase.BATTLE;
+            startBattle();
         }
     }
 }
@@ -266,112 +277,80 @@ function startBattle() {
     document.getElementById('cpu-board').parentElement.style.display = 'block';
 
     if (!isPvP) {
-        placeCPUShips(cpuBoard, cpuArmy); 
-        renderBoard(cpuBoard, 'cpu-board', { onCellClick: handleAttack }); 
+        placeCPUShips(G_STATE.players[2].board, G_STATE.players[2].army); 
+        renderBoard(G_STATE.players[2].board, 'cpu-board', { onCellClick: handleAttack });
     } else {
-        currentPlayer = 1; 
+        G_STATE.currentPlayer = 1;
         
         // buoc an tau khi bat dau choi PvP
-        playerBoardDOM.classList.add('fleet-hidden');
-        cpuBoardDOM.classList.add('fleet-hidden');
+        G_STATE.players[1].boardDOM.classList.add('fleet-hidden');
+        G_STATE.players[2].boardDOM.classList.add('fleet-hidden');
         
         showFog("BATTLE START: PLAYER 1");
-        renderBoard(playerBoard, 'player-board', { onCellClick: handleAttack });
-        renderBoard(cpuBoard, 'cpu-board', { onCellClick: handleAttack });
+        renderBoard(G_STATE.players[1].board, 'player-board', { onCellClick: handleAttack });
+        renderBoard(G_STATE.players[2].board, 'cpu-board', { onCellClick: handleAttack });
     }
 }
 
 function handleAttack(row, col) {
     if (isGameOver || !canPlayerAttack) return;
 
-    if (!isPvP) {
-        const result = receiveAttack(cpuBoard, row, col, cpuArmy);
-        if (result === "invalid") return; 
+    const opponentId = G_STATE.currentPlayer === 1 ? 2 : 1;
+    const opponent = G_STATE.players[opponentId];
 
-        if (result === "hit" || result === "sunk") AudioController.play('hit');
-        else if (result === "miss") AudioController.play('miss');
+    const result = receiveAttack(opponent.board, row, col, opponent.army);
+    if (result === "invalid") return; 
 
-        renderBoard(cpuBoard, 'cpu-board', { onCellClick: handleAttack }); 
+    if (result === "hit" || result === "sunk") AudioController.play('hit');
+    else if (result === "miss") AudioController.play('miss');
 
-        if (defeated(cpuArmy)) {
-            isGameOver = true;
-            canPlayerAttack = false;
-            AudioController.stopBGM();
-            AudioController.play('victory');
-            showGameModal("VICTORY!", "All enemy ships have been destroyed!");
-            memoryReset();
-            return;
-        }
+    renderBoard(opponent.board, opponent.boardDOM.id, { onCellClick: handleAttack });
 
-        canPlayerAttack = false;
+    if (defeated(opponent.army)) {
+        isGameOver = true;
+        AudioController.play('victory');
+        showGameModal("VICTORY!", `PLAYER ${G_STATE.currentPlayer} WINS!`);
+        return;
+    }
+    canPlayerAttack = false;
+    if (isPvP) {
+        setTimeout(() => {
+            G_STATE.currentPlayer = opponentId;
+            showFog(`PLAYER ${G_STATE.currentPlayer}'S TURN`);
+            canPlayerAttack = true;
+        }, 800);
+    } 
+    else {
         statusText.innerText = "Status: Enemy is calculating...";
-
+        
         setTimeout(() => {
             if (isGameOver) return;
 
             let botResult;
             if (difficultySelect.value === 'hard') {
-                botResult = hardBotAttack(playerBoard, playerArmy);
+                botResult = hardBotAttack(G_STATE.players[1].board, G_STATE.players[1].army);
             } else {
-                botResult = easyBotAttack(playerBoard, playerArmy);
+                botResult = easyBotAttack(G_STATE.players[1].board, G_STATE.players[1].army);
             }
 
-            if (botResult === "hit" || botResult === "sunk") AudioController.play('hit');
-            else if (botResult === "miss") AudioController.play('miss');
+            if (botResult === "hit" || botResult === "sunk") {
+                AudioController.play('hit');
+            } else if (botResult === "miss") {
+                AudioController.play('miss');
+            }
 
-            renderBoard(playerBoard, 'player-board', { pArmy: playerArmy });
+            renderBoard(G_STATE.players[1].board, 'player-board', { pArmy: G_STATE.players[1].army });
 
-            if (defeated(playerArmy)) {
+            if (defeated(G_STATE.players[1].army)) {
                 isGameOver = true;
-                canPlayerAttack = false;
                 AudioController.stopBGM();
                 AudioController.play('defeat');
                 showGameModal("DEFEAT!", "Your entire fleet has been sunk!");
-            } else {
-                canPlayerAttack = true;
-                statusText.innerText = "Status: Your turn! Attack!";
+                return;
             }
-        }, 600);
-    } 
-    else {
-        let targetBoard = currentPlayer === 1 ? cpuBoard : playerBoard;
-        let targetArmy = currentPlayer === 1 ? cpuArmy : playerArmy;
-        let targetDOM = currentPlayer === 1 ? 'cpu-board' : 'player-board';
 
-        const result = receiveAttack(targetBoard, row, col, targetArmy);
-        if (result === "invalid") return; 
-
-        if (result === "hit" || result === "sunk") AudioController.play('hit');
-        else if (result === "miss") AudioController.play('miss');
-
-        renderBoard(targetBoard, targetDOM, { onCellClick: handleAttack });
-
-        if (defeated(targetArmy)) {
-            isGameOver = true;
-            canPlayerAttack = false;
-            AudioController.stopBGM();
-            AudioController.play('victory');
-            showGameModal("VICTORY!", `PLAYER ${currentPlayer} WINS!`);
-            return;
-        }
-
-        canPlayerAttack = false;
-        statusText.innerText = "Status: Switching turns...";
-        
-        setTimeout(() => {
-            currentPlayer = currentPlayer === 1 ? 2 : 1;
-            showFog(`PLAYER ${currentPlayer}'S TURN`);
-            
-            let myBoard = currentPlayer === 1 ? playerBoard : cpuBoard;
-            let myArmy = currentPlayer === 1 ? playerArmy : cpuArmy;
-            let myDOM = currentPlayer === 1 ? 'player-board' : 'cpu-board';
-            
-            renderBoard(playerBoard, 'player-board', { onCellClick: handleAttack });
-            renderBoard(cpuBoard, 'cpu-board', { onCellClick: handleAttack });
-            renderBoard(myBoard, myDOM, { pArmy: myArmy, onCellClick: handleAttack });
-            
             canPlayerAttack = true;
-            statusText.innerText = `Player ${currentPlayer}: Attack!`;
+            statusText.innerText = "Status: Your turn! Attack!";
         }, 800);
     }
 }
@@ -386,7 +365,7 @@ document.getElementById('btn-horizontal').onclick = (e) => {
     currentDirection = direction.HORIZONTAL;
     document.querySelectorAll('.button-group button').forEach(b => b.classList.remove('active'));
     e.target.classList.add('active');
-    let activeArmy = (isPvP && currentPlayer === 2) ? cpuArmy : playerArmy;
+    let activeArmy = G_STATE.players[G_STATE.currentPlayer].army;
     renderDock(activeArmy, currentDirection);
     initDragAndDrop();
 };
@@ -395,11 +374,11 @@ document.getElementById('btn-vertical').onclick = (e) => {
     currentDirection = direction.VERTICAL;
     document.querySelectorAll('.button-group button').forEach(b => b.classList.remove('active'));
     e.target.classList.add('active');
-    let activeArmy = (isPvP && currentPlayer === 2) ? cpuArmy : playerArmy;
+    let activeArmy = G_STATE.players[G_STATE.currentPlayer].army;
     renderDock(activeArmy, currentDirection);
     initDragAndDrop();
 };
 
-renderBoard(playerBoard, 'player-board');
-renderDock(playerArmy, currentDirection);
+renderBoard(G_STATE.players[1].board, 'player-board');
+renderDock(G_STATE.players[1].army, currentDirection);
 initDragAndDrop();

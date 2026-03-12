@@ -24,18 +24,23 @@ export function isValidPlacement(board, shipSize, row, col, dirVector) {
         const c = col + i * dirVector.dx;
 
         if (r >= board_size || c >= board_size || r < 0 || c < 0) return false;
+        
         if (board[r][c] !== cell_types.empty) return false;
     }
     return true;
 }
 
 export function placeShip({ board, ship, row, col, dirVector }) {
+    if (ship.position && ship.position.length > 0) {
+        ship.position.forEach(p => {
+            board[p.row][p.col] = cell_types.empty;
+        });
+        ship.position = [];
+    }
+
     if (!isValidPlacement(board, ship.shipSize, row, col, dirVector)) {
         return false;
     }
-
-    ship.placed = { row, col, direction: dirVector }; 
-    ship.placedDirection = dirVector; 
 
     for (let i = 0; i < ship.shipSize; i++) {
         const r = row + i * dirVector.dy;
@@ -44,7 +49,8 @@ export function placeShip({ board, ship, row, col, dirVector }) {
         board[r][c] = ship.shipName.toLowerCase(); 
         ship.position.push({ row: r, col: c });
     }
-    
+
+    ship.placed = true; 
     return true;
 }
 
@@ -64,12 +70,12 @@ export function receiveAttack(board, row, col, army) {
 
         if (targetShip) {
             targetShip.hit();
+            board[row][col] = cell_types.hit;
             return targetShip.sinkState ? "sunk" : "hit";
         }
-    } else {
-        board[row][col] = cell_types.miss;
-        return "miss";
-    }
+    } 
+    board[row][col] = cell_types.miss;
+    return "miss";
 }
 
 export function defeated(army) {

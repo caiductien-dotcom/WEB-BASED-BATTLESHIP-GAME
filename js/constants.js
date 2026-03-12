@@ -10,3 +10,8 @@ export const direction = {
     HORIZONTAL: { dx: 1, dy: 0 },
     VERTICAL: { dx: 0, dy: 1 }
 };
+
+export const phase = {
+    SETUP: 0,
+    BATTLE: 1,
+}
