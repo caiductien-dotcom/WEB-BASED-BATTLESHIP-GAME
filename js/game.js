@@ -104,36 +104,28 @@ btnReady.addEventListener('click', () => {
     }
 });
 
+// AN/HIEN TAU (PvP)
 toggleFleetBtn.addEventListener('click', () => {
-    // an hien ca hai bang
+    // bat tat tang hinh cho hai ben
     G_STATE.players[1].boardDOM.classList.toggle('fleet-hidden');
     G_STATE.players[2].boardDOM.classList.toggle('fleet-hidden');
     
-    if (G_STATE.players[1].boardDOM.classList.contains('fleet-hidden')) {
-        toggleFleetBtn.innerText = "👁️ Show Fleet";
-        toggleFleetBtn.style.background = "white";
-        toggleFleetBtn.style.color = "var(--accent-teal)";
-    } else {
-        toggleFleetBtn.innerText = "🙈 Hide Fleet";
-        toggleFleetBtn.style.background = "var(--accent-teal)";
-        toggleFleetBtn.style.color = "white";
-    }
+    const isHidden = G_STATE.players[1].boardDOM.classList.contains('fleet-hidden');
+    toggleFleetBtn.innerText = isHidden ? "👁️ Show Fleet" : "🙈 Hide Fleet";
+    toggleFleetBtn.style.background = isHidden ? "white" : "var(--accent-teal)";
+    toggleFleetBtn.style.color = isHidden ? "var(--accent-teal)" : "white";
 });
 
-
-
-
+// xu li hover khi keo tau
 function handleHover(row, col) {
     if (draggedShipIndex === null || isGameOver) return;
 
     const pData = G_STATE.players[G_STATE.currentPlayer];
     const ship = pData.army[draggedShipIndex];
-    
     const targetBoardId = (G_STATE.currentPlayer === 1) ? '#player-board .cell' : '#cpu-board .cell';    
     const cells = document.querySelectorAll(targetBoardId);
     
     cells.forEach(c => c.classList.remove('preview-valid', 'preview-invalid'));
-
     const isValid = isValidPlacement(pData.board, ship.shipSize, row, col, currentDirection);
     
     for (let i = 0; i < ship.shipSize; i++) {
@@ -146,49 +138,34 @@ function handleHover(row, col) {
 }
 
 function clearHover() {
-    document.querySelectorAll('.cell').forEach(c => {
-        c.classList.remove('preview-valid', 'preview-invalid');
-    });
+    document.querySelectorAll('.cell').forEach(c => c.classList.remove('preview-valid', 'preview-invalid'));
 }
 
+//  KHOI TAO KEO THA TAU
 function initDragAndDrop() {
     const dockShips = document.querySelectorAll('.dock-ship');
     dockShips.forEach((shipEl) => {
         shipEl.addEventListener('dragstart', (e) => {
-            draggedShipIndex = parseInt(e.target.dataset.index) || Array.from(dockShips).indexOf(e.target);
+            draggedShipIndex = parseInt(e.target.dataset.index);
             e.dataTransfer.setData('shipIndex', draggedShipIndex);
 
-            let activeArmy = (G_STATE.currentPlayer === 2) ? G_STATE.players[2].army : G_STATE.players[1].army;
-            const ship = activeArmy[draggedShipIndex];
-            
+            const ship = G_STATE.players[G_STATE.currentPlayer].army[draggedShipIndex];
             const ghost = document.createElement('div');
-            ghost.style.position = 'absolute';
-            ghost.style.top = '-1000px';
+            ghost.style.position = 'absolute'; ghost.style.top = '-1000px';
 
             if (currentDirection === direction.VERTICAL) {
-                ghost.style.width = '40px';
-                ghost.style.height = `${ship.shipSize * 40}px`;
-                
+                ghost.style.width = '40px'; ghost.style.height = `${ship.shipSize * 40}px`;
                 const inner = document.createElement('div');
-                inner.style.width = `${ship.shipSize * 40}px`;
-                inner.style.height = '40px';
+                inner.style.width = `${ship.shipSize * 40}px`; inner.style.height = '40px';
                 inner.style.backgroundImage = window.getComputedStyle(e.target).backgroundImage;
-                inner.style.backgroundSize = '100% 100%';
-                inner.style.backgroundRepeat = 'no-repeat';
-                inner.style.transform = 'rotate(90deg)';
-                inner.style.transformOrigin = 'top left';
-                inner.style.position = 'absolute';
-                inner.style.left = '40px';
-                
+                inner.style.backgroundSize = '100% 100%'; inner.style.transform = 'rotate(90deg)';
+                inner.style.transformOrigin = 'top left'; inner.style.position = 'absolute'; inner.style.left = '40px';
                 ghost.appendChild(inner);
             } else {
-                ghost.style.width = `${ship.shipSize * 40}px`;
-                ghost.style.height = '40px';
+                ghost.style.width = `${ship.shipSize * 40}px`; ghost.style.height = '40px';
                 ghost.style.backgroundImage = window.getComputedStyle(e.target).backgroundImage;
                 ghost.style.backgroundSize = '100% 100%';
-                ghost.style.backgroundRepeat = 'no-repeat';
             }
-
             document.body.appendChild(ghost);
             e.dataTransfer.setDragImage(ghost, 20, 20);
             setTimeout(() => document.body.removeChild(ghost), 0);
@@ -196,61 +173,31 @@ function initDragAndDrop() {
     });
 
     const pData = G_STATE.players[G_STATE.currentPlayer];
-    console.log("Đang khởi tạo cho Player:", G_STATE.currentPlayer);
-    console.log("Board DOM:", pData.boardDOM);
     const cells = pData.boardDOM.querySelectorAll('.cell');
-    
-
-    cells.forEach((cell) => {
-        cell.onmouseover = null;
-        cell.ondragover = null;
-        cell.ondrop = null;
-    });
     
     cells.forEach((cell, index) => {
         const r = Math.floor(index / 10);
         const c = index % 10;
-
-        cell.ondragover = (e) => {
-            e.preventDefault();
-            handleHover(r, c);
-        };
-
-        cell.ondragleave = () => {
-            clearHover();
-        };
-
+        cell.ondragover = (e) => { e.preventDefault(); handleHover(r, c); };
+        cell.ondragleave = () => clearHover();
         cell.ondrop = (e) => {
-            e.preventDefault();
-            clearHover();
-
+            e.preventDefault(); clearHover();
             const shipIdx = parseInt(e.dataTransfer.getData('shipIndex'));
-
-            const activePlayer = G_STATE.players[G_STATE.currentPlayer];
-            const ship = activePlayer.army[shipIdx];
-
+            const ship = pData.army[shipIdx];
             if (!ship) return;
 
-            const success = placeShip({
-                board: activePlayer.board,
-                ship: ship,
-                row: r,
-                col: c,
-                dirVector: currentDirection
-            });
-
-            if (success) {
-                AudioController.play('placingShip');
-                draggedShipIndex = null;
-                refreshSetupUI();
+            const success = placeShip({ board: pData.board, ship, row: r, col: c, dirVector: currentDirection });
+            if (success) { 
+                AudioController.play('placingShip'); 
+                refreshSetupUI(); 
             }
         };
     });
 }
 
+// setup lai UI sau moi lan dat tau 
 function refreshSetupUI() {
     const pData = G_STATE.players[G_STATE.currentPlayer];
-    
     renderBoard(pData.board, pData.boardDOM.id, { pArmy: pData.army });
     renderDock(pData.army, currentDirection);
     initDragAndDrop();
@@ -258,6 +205,7 @@ function refreshSetupUI() {
     if (pData.army.every(s => s.placed)) {
         if (isPvP && G_STATE.currentPlayer === 1) {
             G_STATE.currentPlayer = 2;
+            // an ng 1, hien ng 2 de nguoi 2 dat tau
             G_STATE.players[1].boardDOM.parentElement.style.display = 'none';
             G_STATE.players[2].boardDOM.parentElement.style.display = 'block';
             showFog("PLAYER 2 SETUP PHASE");
@@ -267,30 +215,31 @@ function refreshSetupUI() {
         }
     }
 }
+
+// BAN NHAU
 function startBattle() {
     AudioController.play('battlestart');
     shipDock.style.display = 'none';
     document.querySelector('.orientation-wrapper').style.display = 'none';
     
-    document.getElementById('player-board').parentElement.style.display = 'block';
-    document.getElementById('cpu-board').parentElement.style.display = 'block';
+    G_STATE.players[1].boardDOM.parentElement.style.display = 'block';
+    G_STATE.players[2].boardDOM.parentElement.style.display = 'block';
 
     if (!isPvP) {
         placeCPUShips(G_STATE.players[2].board, G_STATE.players[2].army); 
         renderBoard(G_STATE.players[2].board, 'cpu-board', { onCellClick: handleAttack });
     } else {
         G_STATE.currentPlayer = 1;
-        
-        // buoc an tau khi bat dau choi PvP
+        // an tau doi thu khi moi bat dau
         G_STATE.players[1].boardDOM.classList.add('fleet-hidden');
         G_STATE.players[2].boardDOM.classList.add('fleet-hidden');
-        
         showFog("BATTLE START: PLAYER 1");
-        renderBoard(G_STATE.players[1].board, 'player-board', { onCellClick: handleAttack });
+        renderBoard(G_STATE.players[1].board, 'player-board', { pArmy: G_STATE.players[1].army });
         renderBoard(G_STATE.players[2].board, 'cpu-board', { onCellClick: handleAttack });
     }
 }
 
+//Logic tan cong
 function handleAttack(row, col) {
     if (isGameOver || !canPlayerAttack) return;
 
@@ -303,53 +252,54 @@ function handleAttack(row, col) {
     if (result === "hit" || result === "sunk") AudioController.play('hit');
     else if (result === "miss") AudioController.play('miss');
 
+    // ve lai bang doi thu de hien ket qua ban
     renderBoard(opponent.board, opponent.boardDOM.id, { onCellClick: handleAttack });
 
+    // kiem tra thang thua
     if (defeated(opponent.army)) {
         isGameOver = true;
         AudioController.play('victory');
         showGameModal("VICTORY!", `PLAYER ${G_STATE.currentPlayer} WINS!`);
         return;
     }
+
     canPlayerAttack = false;
+
     if (isPvP) {
         setTimeout(() => {
             G_STATE.currentPlayer = opponentId;
             showFog(`PLAYER ${G_STATE.currentPlayer}'S TURN`);
+            
+            const myData = G_STATE.players[G_STATE.currentPlayer];
+            const opData = G_STATE.players[opponentId === 1 ? 2 : 1];
+            renderBoard(myData.board, myData.boardDOM.id, { pArmy: myData.army });
+            renderBoard(opData.board, opData.boardDOM.id, { onCellClick: handleAttack });
+            
             canPlayerAttack = true;
         }, 800);
     } 
     else {
+        // logic danh voi AI 
         statusText.innerText = "Status: Enemy is calculating...";
-        
         setTimeout(() => {
             if (isGameOver) return;
+            let botResult = (difficultySelect.value === 'hard') ? 
+                hardBotAttack(G_STATE.players[1].board, G_STATE.players[1].army) : 
+                easyBotAttack(G_STATE.players[1].board, G_STATE.players[1].army);
 
-            let botResult;
-            if (difficultySelect.value === 'hard') {
-                botResult = hardBotAttack(G_STATE.players[1].board, G_STATE.players[1].army);
-            } else {
-                botResult = easyBotAttack(G_STATE.players[1].board, G_STATE.players[1].army);
-            }
-
-            if (botResult === "hit" || botResult === "sunk") {
-                AudioController.play('hit');
-            } else if (botResult === "miss") {
-                AudioController.play('miss');
-            }
+            if (botResult === "hit" || botResult === "sunk") AudioController.play('hit');
+            else if (botResult === "miss") AudioController.play('miss');
 
             renderBoard(G_STATE.players[1].board, 'player-board', { pArmy: G_STATE.players[1].army });
 
             if (defeated(G_STATE.players[1].army)) {
                 isGameOver = true;
-                AudioController.stopBGM();
                 AudioController.play('defeat');
                 showGameModal("DEFEAT!", "Your entire fleet has been sunk!");
-                return;
+            } else {
+                canPlayerAttack = true;
+                statusText.innerText = "Status: Your turn! Attack!";
             }
-
-            canPlayerAttack = true;
-            statusText.innerText = "Status: Your turn! Attack!";
         }, 800);
     }
 }
