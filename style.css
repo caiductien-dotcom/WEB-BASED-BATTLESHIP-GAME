@@ -161,7 +161,6 @@ h1 {
 
 .board {
     position: relative;
-    display: grid;
     grid-template-columns: repeat(10, var(--cell-size));
     grid-template-rows: repeat(10, var(--cell-size));
     background-color: #81d4fa;
@@ -189,12 +188,6 @@ h1 {
     background-repeat: no-repeat;
     pointer-events: none;
     z-index: 5;
-    transition: all 0.1s ease-out; 
-}
-
-.ship-display.vertical { 
-    transform: rotate(90deg); 
-    transform-origin: top left; 
 }
 
 .cell.hit { 

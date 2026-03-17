@@ -42,13 +42,18 @@ export function renderBoard(data, containerId, { onCellClick, onMouseOver, onMou
 
                 if (isVertical) {
                     shipEl.classList.add("vertical");
-                    shipEl.style.width = `${cellSize}px`;
-                    shipEl.style.height = `${ship.shipSize * cellSize}px`;
+                    shipEl.style.width = `${ship.shipSize * cellSize}px`;
+                    shipEl.style.height = `${cellSize}px`;
+                    shipEl.style.top = `${head.row * cellSize}px`;
+                    shipEl.style.left = `${head.col * cellSize + cellSize}px`;
+                    shipEl.style.transformOrigin = "top left";
+                    shipEl.style.transform = "rotate(90deg)";
                 } else {
                     shipEl.style.width = `${ship.shipSize * cellSize}px`;
                     shipEl.style.height = `${cellSize}px`;
+                    shipEl.style.top = `${head.row * cellSize}px`;
+                    shipEl.style.left = `${head.col * cellSize}px`;
                 }
-
                 boardElement.appendChild(shipEl);
             }
         });
