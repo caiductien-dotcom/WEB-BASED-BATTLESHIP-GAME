@@ -1,10 +1,11 @@
 import { cell_types, direction } from "./constants.js";
 
-export function renderBoard(data, containerId, { onCellClick, onMouseOver, onMouseOut, pArmy, shotClass, onShipDragEnd } = {}) {
+export function renderBoard(data, containerId, { onCellClick, onMouseOver, onMouseOut, pArmy, shotClass, onShipDragEnd, onShipDragStart } = {}) {
     const boardElement = document.getElementById(containerId);
     if (!boardElement) return;
 
     boardElement.innerHTML = "";
+    boardElement.__boardData = data;
 
     for (let i = 0; i < data.length; i++) {
         for (let j = 0; j < data[i].length; j++) {
@@ -45,9 +46,9 @@ export function renderBoard(data, containerId, { onCellClick, onMouseOver, onMou
                     shipEl.style.width = `${ship.shipSize * cellSize}px`;
                     shipEl.style.height = `${cellSize}px`;
                     shipEl.style.top = `${head.row * cellSize}px`;
-                    shipEl.style.left = `${head.col * cellSize + cellSize}px`;
+                    shipEl.style.left = `${head.col * cellSize}px`;
                     shipEl.style.transformOrigin = "top left";
-                    shipEl.style.transform = "rotate(90deg)";
+                    shipEl.style.transform = `rotate(90deg) translateY(-${cellSize}px)`;
                 } else {
                     shipEl.style.width = `${ship.shipSize * cellSize}px`;
                     shipEl.style.height = `${cellSize}px`;
@@ -62,7 +63,27 @@ export function renderBoard(data, containerId, { onCellClick, onMouseOver, onMou
 
                 shipEl.addEventListener('dragstart', (e) => {
                     e.dataTransfer.setData('shipIndex', shipIdx);
-                    setTimeout(() => { shipEl.style.opacity = '0.3'; }, 0);
+                    e.dataTransfer.setData('fromBoard', 'true');
+
+                    // Tao custom ghost
+                    const ghost = document.createElement('div');
+                    ghost.style.position = 'absolute';
+                    ghost.style.top = '-1000px';
+                    ghost.style.backgroundImage = window.getComputedStyle(shipEl).backgroundImage;
+                    ghost.style.backgroundSize = '100% 100%';
+                    ghost.style.backgroundRepeat = 'no-repeat';
+                    ghost.style.width = `${ship.shipSize * cellSize}px`;
+                    ghost.style.height = `${cellSize}px`;
+                    document.body.appendChild(ghost);
+                    e.dataTransfer.setDragImage(ghost, ghost.offsetWidth / 2, ghost.offsetHeight / 2);
+
+                    setTimeout(() => {
+                        document.body.removeChild(ghost);
+                        shipEl.style.opacity = '0.3';
+                    }, 0);
+
+                    // Thong bao game.js tau nao dang duoc keo
+                    if (onShipDragStart) onShipDragStart(shipIdx);
                 });
 
                 shipEl.addEventListener('dragend', () => {

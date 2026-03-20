@@ -77,7 +77,11 @@ btnLocalPvP.addEventListener('click', () => {
     document.getElementById('btn-lock-p2').style.display = 'block';
 
     // Render ca 2 board ngay tu dau
-    renderBoard(G_STATE.players[1].board, 'player-board', { pArmy: G_STATE.players[1].army });
+    renderBoard(G_STATE.players[1].board, 'player-board', { 
+        pArmy: G_STATE.players[1].army,
+        onShipDragStart: (idx) => { draggedShipIndex = idx; },
+        onShipDragEnd: () => { draggedShipIndex = null; clearHover(); }
+    });
     renderBoard(G_STATE.players[2].board, 'cpu-board', { pArmy: G_STATE.players[2].army });
     renderDock(G_STATE.players[1].army, currentDirection);
     initDragAndDrop();
@@ -195,8 +199,31 @@ function initDragAndDrop() {
     cells.forEach((cell, index) => {
         const r = Math.floor(index / 10);
         const c = index % 10;
-        cell.ondragover = (e) => { e.preventDefault(); handleHover(r, c); };
+
+        cell.ondragover = (e) => {
+            e.preventDefault();
+
+            // Lay draggedShipIndex tu ship-display dang duoc keo 
+            if (draggedShipIndex === null) {
+                const draggingEl = document.querySelector('.ship-display[style*="opacity: 0.3"]');
+                if (draggingEl) draggedShipIndex = parseInt(draggingEl.dataset.index);
+            }
+
+            const ship = draggedShipIndex !== null ? pData.army[draggedShipIndex] : null;
+            if (ship && ship.position) {
+                ship.position.forEach(p => { pData.board[p.row][p.col] = 0; });
+            }
+
+            handleHover(r, c);
+
+            // Phuc hoi lai vi tri cu 
+            if (ship && ship.position) {
+                ship.position.forEach(p => { pData.board[p.row][p.col] = ship.shipName.toLowerCase(); });
+            }
+        };
+
         cell.ondragleave = () => clearHover();
+
         cell.ondrop = (e) => {
             e.preventDefault(); clearHover();
 
@@ -217,16 +244,13 @@ function initDragAndDrop() {
         };
     });
 }
-
 // setup lai UI sau moi lan dat tau 
 function refreshSetupUI() {
     const pData = G_STATE.players[G_STATE.currentPlayer];
     renderBoard(pData.board, pData.boardDOM.id, { 
         pArmy: pData.army,
-        onShipDragEnd: () => {
-            draggedShipIndex = null;
-            clearHover();
-        }
+        onShipDragStart: (idx) => { draggedShipIndex = idx; },
+        onShipDragEnd: () => { draggedShipIndex = null; clearHover(); }
     });
     renderDock(pData.army, currentDirection);
     initDragAndDrop();
@@ -237,7 +261,7 @@ function startBattle() {
     AudioController.play('battlestart');
     shipDock.style.display = 'none';
     document.querySelector('.orientation-wrapper').style.display = 'none';
-    
+    document.querySelector('.setup-section').style.display = 'none';
     G_STATE.players[1].boardDOM.parentElement.style.display = 'block';
     G_STATE.players[2].boardDOM.parentElement.style.display = 'block';
 
@@ -310,7 +334,11 @@ function lockFleet(playerNum) {
             draggedShipIndex = null;
             clearHover();
             statusText.innerText = "✅ Player 1 locked! 🎯 Player 2: Set up your fleet!";
-            renderBoard(G_STATE.players[2].board, 'cpu-board', { pArmy: G_STATE.players[2].army });
+            renderBoard(G_STATE.players[2].board, 'cpu-board', { 
+                pArmy: G_STATE.players[2].army,
+                onShipDragStart: (idx) => { draggedShipIndex = idx; },
+                onShipDragEnd: () => { draggedShipIndex = null; clearHover(); }
+            });
             renderDock(G_STATE.players[2].army, currentDirection);
             initDragAndDrop();
         }

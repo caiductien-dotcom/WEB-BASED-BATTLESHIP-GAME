@@ -156,27 +156,38 @@ h1 {
     justify-content: center; 
 }
 
-.board-wrapper h3 {
-    text-align: center;
+.board-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.board-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: calc(var(--cell-size) * 10);
+    height: 40px;
+    margin-bottom: 10px;
+}
+
+.board-header h3 {
+    margin: 0;
     color: #1a237e;
-    margin-bottom: 15px;
     font-weight: 800;
+    font-size: 1.1rem;
 }
 
 .board {
     position: relative;
+    display: grid;
     grid-template-columns: repeat(10, var(--cell-size));
     grid-template-rows: repeat(10, var(--cell-size));
     background-color: #81d4fa;
     border: 2px solid var(--border-color);
     box-shadow: 0 10px 25px rgba(0,0,0,0.1);
     padding: 0;
-}
-#player-board, #cpu-board {
-    position: relative; 
-    display: grid;
-    grid-template-columns: repeat(10, var(--cell-size));
-    grid-template-rows: repeat(10, var(--cell-size));
+    overflow: hidden;
 }
 
 .cell {
@@ -209,7 +220,7 @@ h1 {
 
 .cell.miss { 
     background-color: #1a237e; 
-    opacity: 1; /* đổi từ 0.7 → 1 */
+    opacity: 1;
     z-index: 6;
 }
 
@@ -219,7 +230,7 @@ h1 {
 
 .cell.p2-shot.miss { 
     background-color: #4a148c !important; 
-    opacity: 1 !important; /* đổi từ 0.7 → 1 */
+    opacity: 1 !important;
 }
 
 .cell:hover { 
@@ -289,13 +300,13 @@ h1 {
     transform: translateY(4px); 
     box-shadow: 0 2px 0px #006064; 
 }
+
 .fleet-hidden .ship-display {
     opacity: 0 !important;
     pointer-events: none;
     transition: opacity 0.3s ease;
 }
 
-/* chinh nut an hien */
 .toggle-btn {
     padding: 8px 16px;
     border-radius: 50px;
@@ -314,6 +325,13 @@ h1 {
     color: white;
     transform: translateY(-2px);
 }
+
+.toggle-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
 #fog-of-war-modal {
     background: radial-gradient(circle, rgba(44, 62, 80, 0.9) 0%, rgba(0, 0, 0, 0.95) 100%);
     animation: fadeIn 0.5s ease;
@@ -329,6 +347,7 @@ h1 {
     letter-spacing: 3px;
     margin-bottom: 20px;
 }
+
 .shake {
     animation: shake 0.5s;
 }
