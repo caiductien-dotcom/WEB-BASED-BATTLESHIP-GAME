@@ -52,21 +52,30 @@
         </div>
 
         <div class="game-container">
-            <div class="board-wrapper">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <div class="board-wrapper p1-area">
+                <div class="board-header">
                     <h3 style="margin: 0;">Your Fleet</h3>
-                    <button id="toggle-fleet-btn" class="toggle-btn">👁️ Show Fleet</button>
+                <div style="display: flex; gap: 5px;">
+                    <button id="btn-random-p1" class="toggle-btn" style="padding: 5px 10px; font-size: 0.7rem;">🎲 Random</button>
+                    <button id="btn-lock-p1" class="toggle-btn" style="padding: 5px 10px; font-size: 0.7rem;">🔒 Lock</button>
+                    <button id="toggle-fleet-btn" class="toggle-btn" style="padding: 5px 10px; font-size: 0.7rem;">👁️ Show</button>
+                </div>
                 </div>
                 <div id="player-board" class="board fleet-hidden"></div>
             </div>
-            
-            <div class="board-wrapper">
-                <h3 style="margin-bottom: 7px;">Enemy Fleet</h3>
-                <div id="cpu-board" class="board"></div>
-            </div>
+    
+    <div class="board-wrapper p2-area">
+        <div class="board-header">
+            <h3 style="margin: 0;">Enemy Fleet</h3>
+        <div style="display: flex; gap: 5px;">
+            <button id="btn-random-p2" class="toggle-btn" style="display:none; padding: 5px 10px; font-size: 0.7rem;">🎲 Random</button>
+            <button id="btn-lock-p2" class="toggle-btn" style="display:none; padding: 5px 10px; font-size: 0.7rem;">🔒 Lock</button>
         </div>
+        </div>
+        <div id="cpu-board" class="board"></div>
     </div>
-
+    </div>
+    </div>
     <div id="game-modal" class="modal-overlay">
         <div class="modal-content">
             <h2 id="modal-title">Notification</h2>

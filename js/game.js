@@ -19,7 +19,8 @@ const G_STATE = {
         }
     },
     phase: phase.SETUP,
-    currentPlayer: 1
+    currentPlayer: 1,
+    locked: { 1: false, 2: false }
 };
 
 let currentDirection = direction.HORIZONTAL;
@@ -27,6 +28,7 @@ let isGameOver = false;
 let canPlayerAttack = true; 
 let draggedShipIndex = null;
 let isPvP = false;
+let activeSetupPlayer = 1; // player nao dang duoc dat tau
 
 const statusText = document.getElementById('status-text');
 const difficultySelect = document.getElementById('difficulty-select');
@@ -60,6 +62,7 @@ btnSinglePlayer.addEventListener('click', () => {
 btnLocalPvP.addEventListener('click', () => {
     isPvP = true;
     G_STATE.currentPlayer = 1;
+    activeSetupPlayer = 1;
     startModal.style.display = 'none';
     mainGameArea.style.display = 'flex';
     document.querySelector('.difficulty-group').style.display = 'none';
@@ -69,7 +72,17 @@ btnLocalPvP.addEventListener('click', () => {
     G_STATE.players[1].boardDOM.classList.remove('fleet-hidden');
     G_STATE.players[2].boardDOM.classList.remove('fleet-hidden');
 
-    statusText.innerText = "Player 1: Set up your fleet!";
+    // Hien nut random va lock cho ca 2 player
+    document.getElementById('btn-random-p2').style.display = 'block';
+    document.getElementById('btn-lock-p2').style.display = 'block';
+
+    // Render ca 2 board ngay tu dau
+    renderBoard(G_STATE.players[1].board, 'player-board', { pArmy: G_STATE.players[1].army });
+    renderBoard(G_STATE.players[2].board, 'cpu-board', { pArmy: G_STATE.players[2].army });
+    renderDock(G_STATE.players[1].army, currentDirection);
+    initDragAndDrop();
+
+    statusText.innerText = "🎯 Player 1: Set up your fleet first!";
     AudioController.startBGM();
 });
 
@@ -98,10 +111,6 @@ btnReady.addEventListener('click', () => {
         G_STATE.players[1].boardDOM.classList.remove('fleet-hidden');
         G_STATE.players[2].boardDOM.classList.remove('fleet-hidden');
     }
-    
-    if (isPvP && !isGameOver && G_STATE.phase === phase.SETUP) {
-        refreshSetupUI();
-    }
 });
 
 // AN/HIEN TAU (PvP)
@@ -116,12 +125,18 @@ toggleFleetBtn.addEventListener('click', () => {
     toggleFleetBtn.style.color = isHidden ? "var(--accent-teal)" : "white";
 });
 
+function clearHover() {
+    document.querySelectorAll('.cell').forEach(c => c.classList.remove('preview-valid', 'preview-invalid'));
+}
+
 // xu li hover khi keo tau
 function handleHover(row, col) {
     if (draggedShipIndex === null || isGameOver) return;
 
     const pData = G_STATE.players[G_STATE.currentPlayer];
     const ship = pData.army[draggedShipIndex];
+    if (!ship) return;
+
     const targetBoardId = (G_STATE.currentPlayer === 1) ? '#player-board .cell' : '#cpu-board .cell';    
     const cells = document.querySelectorAll(targetBoardId);
     
@@ -135,10 +150,6 @@ function handleHover(row, col) {
             cells[r * board_size + c].classList.add(isValid ? 'preview-valid' : 'preview-invalid');
         }
     }
-}
-
-function clearHover() {
-    document.querySelectorAll('.cell').forEach(c => c.classList.remove('preview-valid', 'preview-invalid'));
 }
 
 //  KHOI TAO KEO THA TAU
@@ -170,6 +181,12 @@ function initDragAndDrop() {
             e.dataTransfer.setDragImage(ghost, 20, 20);
             setTimeout(() => document.body.removeChild(ghost), 0);
         });
+
+        // Reset neu khong drop thanh cong
+        shipEl.addEventListener('dragend', () => {
+            draggedShipIndex = null;
+            clearHover();
+        });
     });
 
     const pData = G_STATE.players[G_STATE.currentPlayer];
@@ -182,13 +199,19 @@ function initDragAndDrop() {
         cell.ondragleave = () => clearHover();
         cell.ondrop = (e) => {
             e.preventDefault(); clearHover();
+
+            // Kiem tra board nay co phai cua activeSetupPlayer khong
+            const boardOwner = (pData.boardDOM.id === 'player-board') ? 1 : 2;
+            if (isPvP && boardOwner !== activeSetupPlayer) return;
+
             const shipIdx = parseInt(e.dataTransfer.getData('shipIndex'));
             const ship = pData.army[shipIdx];
             if (!ship) return;
 
             const success = placeShip({ board: pData.board, ship, row: r, col: c, dirVector: currentDirection });
             if (success) { 
-                AudioController.play('placingShip'); 
+                AudioController.play('placingShip');
+                draggedShipIndex = null; // reset sau khi dat xong
                 refreshSetupUI(); 
             }
         };
@@ -198,22 +221,15 @@ function initDragAndDrop() {
 // setup lai UI sau moi lan dat tau 
 function refreshSetupUI() {
     const pData = G_STATE.players[G_STATE.currentPlayer];
-    renderBoard(pData.board, pData.boardDOM.id, { pArmy: pData.army });
+    renderBoard(pData.board, pData.boardDOM.id, { 
+        pArmy: pData.army,
+        onShipDragEnd: () => {
+            draggedShipIndex = null;
+            clearHover();
+        }
+    });
     renderDock(pData.army, currentDirection);
     initDragAndDrop();
-    
-    if (pData.army.every(s => s.placed)) {
-        if (isPvP && G_STATE.currentPlayer === 1) {
-            G_STATE.currentPlayer = 2;
-            // an ng 1, hien ng 2 de nguoi 2 dat tau
-            G_STATE.players[1].boardDOM.parentElement.style.display = 'none';
-            G_STATE.players[2].boardDOM.parentElement.style.display = 'block';
-            showFog("PLAYER 2 SETUP PHASE");
-        } else {
-            G_STATE.phase = phase.BATTLE;
-            startBattle();
-        }
-    }
 }
 
 // BAN NHAU
@@ -239,6 +255,74 @@ function startBattle() {
     }
 }
 
+//random tau
+function randomPlaceAllShips(playerNum) {
+    if (G_STATE.locked[playerNum]) return;
+    if (isPvP && playerNum !== activeSetupPlayer) {
+        statusText.innerText = `⛔ It's Player ${activeSetupPlayer}'s turn to set up!`;
+        return;
+    }
+    const pData = G_STATE.players[playerNum];
+    pData.board = createBoatData();
+    pData.army = playerShipArmy();
+    placeCPUShips(pData.board, pData.army);
+    AudioController.play('placingShip');
+    draggedShipIndex = null; // reset sau khi random
+    clearHover();
+    G_STATE.currentPlayer = playerNum;
+    refreshSetupUI();
+}
+
+document.getElementById('btn-random-p1').addEventListener('click', () => randomPlaceAllShips(1));
+document.getElementById('btn-random-p2').addEventListener('click', () => randomPlaceAllShips(2));
+
+function lockFleet(playerNum) {
+    // khong phai luot cua ban
+    if (isPvP && playerNum !== activeSetupPlayer) {
+        statusText.innerText = `⛔ It's Player ${activeSetupPlayer}'s turn to set up!`;
+        return;
+    }
+
+    const pData = G_STATE.players[playerNum];
+    
+    // chua dat het tau khong dc lock
+    if (!pData.army.every(s => s.placed)) {
+        statusText.innerText = `⚠️ Player ${playerNum}: Place all ships first!`;
+        return;
+    }
+    
+    G_STATE.locked[playerNum] = true;
+    
+    // disable nut random va lock
+    document.getElementById(`btn-random-p${playerNum}`).disabled = true;
+    document.getElementById(`btn-lock-p${playerNum}`).innerText = "✅ Locked";
+    document.getElementById(`btn-lock-p${playerNum}`).disabled = true;
+
+    // ca 2 lock thi vao tran
+    if (isPvP) {
+        if (G_STATE.locked[1] && G_STATE.locked[2]) {
+            G_STATE.phase = phase.BATTLE;
+            startBattle();
+        } else {
+            // Player 1 da lock, chuyen luot sang player 2
+            activeSetupPlayer = 2;
+            G_STATE.currentPlayer = 2;
+            draggedShipIndex = null;
+            clearHover();
+            statusText.innerText = "✅ Player 1 locked! 🎯 Player 2: Set up your fleet!";
+            renderBoard(G_STATE.players[2].board, 'cpu-board', { pArmy: G_STATE.players[2].army });
+            renderDock(G_STATE.players[2].army, currentDirection);
+            initDragAndDrop();
+        }
+    } else {
+        G_STATE.phase = phase.BATTLE;
+        startBattle();
+    }
+}
+
+document.getElementById('btn-lock-p1').addEventListener('click', () => lockFleet(1));
+document.getElementById('btn-lock-p2').addEventListener('click', () => lockFleet(2));
+
 //Logic tan cong
 function handleAttack(row, col) {
     if (isGameOver || !canPlayerAttack) return;
@@ -253,7 +337,10 @@ function handleAttack(row, col) {
     else if (result === "miss") AudioController.play('miss');
 
     // ve lai bang doi thu de hien ket qua ban
-    renderBoard(opponent.board, opponent.boardDOM.id, { onCellClick: handleAttack });
+    renderBoard(opponent.board, opponent.boardDOM.id, { 
+        onCellClick: handleAttack,
+        shotClass: `p${G_STATE.currentPlayer}-shot`
+    });
 
     // kiem tra thang thua
     if (defeated(opponent.army)) {

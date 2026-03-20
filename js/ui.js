@@ -1,6 +1,6 @@
 import { cell_types, direction } from "./constants.js";
 
-export function renderBoard(data, containerId, { onCellClick, onMouseOver, onMouseOut, pArmy } = {}) {
+export function renderBoard(data, containerId, { onCellClick, onMouseOver, onMouseOut, pArmy, shotClass, onShipDragEnd } = {}) {
     const boardElement = document.getElementById(containerId);
     if (!boardElement) return;
 
@@ -14,8 +14,10 @@ export function renderBoard(data, containerId, { onCellClick, onMouseOver, onMou
 
             if (cellValue === cell_types.hit) {
                 cell.classList.add("hit");
+                if (shotClass) cell.classList.add(shotClass);
             } else if (cellValue === cell_types.miss) {
                 cell.classList.add("miss");
+                if (shotClass) cell.classList.add(shotClass);
             }
 
             if (onCellClick) cell.onclick = () => onCellClick(i, j);
@@ -29,16 +31,14 @@ export function renderBoard(data, containerId, { onCellClick, onMouseOver, onMou
     const cellSize = 40;
 
     if (pArmy) {
-        pArmy.forEach(ship => {
+        pArmy.forEach((ship, shipIdx) => {
             if (ship.placed && ship.position && ship.position.length > 0) {
                 const head = ship.position[0];
                 const isVertical = ship.position.length > 1 && ship.position[0].col === ship.position[1].col;
                 
                 const shipEl = document.createElement("div");
                 shipEl.classList.add("ship-display", ship.shipName.toLowerCase());
-
-                shipEl.style.top = `${head.row * cellSize}px`;
-                shipEl.style.left = `${head.col * cellSize}px`;
+                shipEl.dataset.index = shipIdx;
 
                 if (isVertical) {
                     shipEl.classList.add("vertical");
@@ -54,6 +54,22 @@ export function renderBoard(data, containerId, { onCellClick, onMouseOver, onMou
                     shipEl.style.top = `${head.row * cellSize}px`;
                     shipEl.style.left = `${head.col * cellSize}px`;
                 }
+
+                // Cho phep keo tau tu board sang o khac
+                shipEl.draggable = true;
+                shipEl.style.pointerEvents = 'auto';
+                shipEl.style.cursor = 'grab';
+
+                shipEl.addEventListener('dragstart', (e) => {
+                    e.dataTransfer.setData('shipIndex', shipIdx);
+                    setTimeout(() => { shipEl.style.opacity = '0.3'; }, 0);
+                });
+
+                shipEl.addEventListener('dragend', () => {
+                    shipEl.style.opacity = '1';
+                    if (onShipDragEnd) onShipDragEnd();
+                });
+
                 boardElement.appendChild(shipEl);
             }
         });
