@@ -190,19 +190,19 @@ h1 {
     overflow: hidden;
 }
 
-.cell {
-    width: var(--cell-size);
-    height: var(--cell-size);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    transition: background-color 0.2s;
-}
-
 .ship-display {
     position: absolute;
     background-size: 100% 100%;
     background-repeat: no-repeat;
     pointer-events: none;
     z-index: 5;
+}
+
+.cell {
+    width: var(--cell-size);
+    height: var(--cell-size);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    transition: background-color 0.2s;
 }
 
 .cell.hit { 
@@ -225,12 +225,25 @@ h1 {
 }
 
 .cell.p2-shot.hit { 
-    background-color: rgba(255, 140, 0, 0.5) !important; 
+    background-color: rgba(255, 200, 0, 0.7) !important; 
+}
+
+.cell.p2-shot.hit::after { 
+    content: '⭐'; 
+    font-size: 20px; 
 }
 
 .cell.p2-shot.miss { 
-    background-color: #4a148c !important; 
+    background-color: rgba(46, 160, 67, 0.8) !important; 
     opacity: 1 !important;
+}
+
+#cpu-board {
+    background-color: rgba(255, 160, 80, 0.4) !important;
+}
+
+#cpu-board .cell {
+    border: 1px solid rgba(255, 255, 255, 0.4);
 }
 
 .cell:hover { 
@@ -245,7 +258,6 @@ h1 {
 .cell.preview-invalid { 
     background-color: rgba(231, 76, 60, 0.7) !important; 
 }
-
 .modal-overlay {
     position: fixed; 
     inset: 0; 
