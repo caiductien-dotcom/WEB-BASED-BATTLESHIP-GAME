@@ -5,10 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Battleship Game</title>
     <link rel="stylesheet" href="style.css">
+    <script>
+    // Kiểm tra ngay lập tức khi trang vừa tải
+    if (!localStorage.getItem("userToken")) {
+        alert("Bạn cần đăng nhập để chơi game!");
+        window.location.href = "path/to/your/login.html"; // Trỏ về trang login của ông
+    }
+    </script>
 </head>
 <body>
     <h1>BATTLESHIP GAME</h1>
-
+    <button id="btn-logout" style="position: fixed; top: 20px; right: 20px; z-index: 1000; padding: 10px 20px; background: #e74c3c; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; box-shadow: 0 4px #c0392b;">
+    ĐĂNG XUẤT
+    </button>
     <div id="start-modal" class="modal-overlay" style="display: flex;">
         <div class="modal-content">
             <h2 id="start-title">BATTLESHIP COMMAND</h2>
@@ -93,7 +102,26 @@
         <audio id="sfx-victory" src="./assets/sfx/victory.mp3" preload="auto"></audio>
         <audio id="bgm-ocean" src="./assets/sfx/bgm.mp3" preload="auto" loop></audio>
     </div>
+    <script>
+    // 1. kiem tra token xem co gui tu url login
+    const urlParams = new URLSearchParams(window.location.search);
+    const tokenFromUrl = urlParams.get('token');
 
+    if (tokenFromUrl) {
+        // neu co cat vao tui de dung
+        localStorage.setItem("userToken", tokenFromUrl);
+        
+        // xoa duoi token dam bao bao mat
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
+
+    // 2. chot chan bao mat
+    if (!localStorage.getItem("userToken")) {
+        alert("Bạn chưa đăng nhập! Vui lòng quay lại trang Login.");
+        // tro ve link repo backend
+        window.location.href = "https://saas-backend-0ynu.onrender.com"; 
+    }
+</script>
     <script type="module" src="./js/game.js"></script>
     <script type="module" src="./js/audio.js"></script>
 </body>
