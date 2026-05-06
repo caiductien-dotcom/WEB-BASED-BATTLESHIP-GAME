@@ -6,11 +6,20 @@
     <title>Battleship Game</title>
     <link rel="stylesheet" href="style.css">
     <script>
-    // Kiểm tra ngay lập tức khi trang vừa tải
-    if (!localStorage.getItem("userToken")) {
-        alert("Bạn cần đăng nhập để chơi game!");
-        window.location.href = "https://caiductien-dotcom.github.io/saas-backend/"; // Tro ve login
-    }
+        // 1. nhat token url ngay lap tuc
+        const urlParams = new URLSearchParams(window.location.search);
+        const tokenFromUrl = urlParams.get('token');
+
+        if (tokenFromUrl) {
+            localStorage.setItem("userToken", tokenFromUrl);
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+
+        // 2. kiem tra xem co ve khong
+        if (!localStorage.getItem("userToken")) {
+            alert("Bạn chưa đăng nhập! Vui lòng quay lại trang Login.");
+            window.location.href = "https://caiductien-dotcom.github.io/saas-backend/"; 
+        }
     </script>
 </head>
 <body>
@@ -102,26 +111,6 @@
         <audio id="sfx-victory" src="./assets/sfx/victory.mp3" preload="auto"></audio>
         <audio id="bgm-ocean" src="./assets/sfx/bgm.mp3" preload="auto" loop></audio>
     </div>
-    <script>
-    // 1. kiem tra token xem co gui tu url login
-    const urlParams = new URLSearchParams(window.location.search);
-    const tokenFromUrl = urlParams.get('token');
-
-    if (tokenFromUrl) {
-        // neu co cat vao tui de dung
-        localStorage.setItem("userToken", tokenFromUrl);
-        
-        // xoa duoi token dam bao bao mat
-        window.history.replaceState({}, document.title, window.location.pathname);
-    }
-
-    // 2. chot chan bao mat
-    if (!localStorage.getItem("userToken")) {
-        alert("Bạn chưa đăng nhập! Vui lòng quay lại trang Login.");
-        // tro ve link repo backend
-        window.location.href = "https://saas-backend-0ynu.onrender.com"; 
-    }
-</script>
     <script type="module" src="./js/game.js"></script>
     <script type="module" src="./js/audio.js"></script>
 </body>
