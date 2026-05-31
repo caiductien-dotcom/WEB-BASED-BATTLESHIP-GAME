@@ -67,13 +67,14 @@ btnLocalPvP.addEventListener('click', () => {
     mainGameArea.style.display = 'flex';
     document.querySelector('.difficulty-group').style.display = 'none';
     
-    // Logic: hien nut tang hinh khi PvP
-    toggleFleetBtn.style.display = 'block'; 
+    // Logic: an nut tang hinh khi P1 dang setup
+    toggleFleetBtn.style.display = 'none'; 
     G_STATE.players[1].boardDOM.classList.remove('fleet-hidden');
     G_STATE.players[2].boardDOM.classList.remove('fleet-hidden');
 
-    // Hien nut random va lock cho ca 2 player
-    document.getElementById('btn-random-p2').style.display = 'block';
+    // P1 setup truoc: hien random P1, an random P2
+    document.getElementById('btn-random-p1').style.display = 'block';
+    document.getElementById('btn-random-p2').style.display = 'none';
     document.getElementById('btn-lock-p2').style.display = 'block';
 
     // Render ca 2 board ngay tu dau
@@ -119,11 +120,10 @@ btnReady.addEventListener('click', () => {
 
 // AN/HIEN TAU (PvP)
 toggleFleetBtn.addEventListener('click', () => {
-    // bat tat tang hinh cho hai ben
-    G_STATE.players[1].boardDOM.classList.toggle('fleet-hidden');
-    G_STATE.players[2].boardDOM.classList.toggle('fleet-hidden');
-    
-    const isHidden = G_STATE.players[1].boardDOM.classList.contains('fleet-hidden');
+    const myBoardDOM = G_STATE.players[activeSetupPlayer].boardDOM;
+    myBoardDOM.classList.toggle('fleet-hidden');
+
+    const isHidden = myBoardDOM.classList.contains('fleet-hidden');
     toggleFleetBtn.innerText = isHidden ? "👁️ Show Fleet" : "🙈 Hide Fleet";
     toggleFleetBtn.style.background = isHidden ? "white" : "var(--accent-teal)";
     toggleFleetBtn.style.color = isHidden ? "var(--accent-teal)" : "white";
@@ -259,6 +259,7 @@ function refreshSetupUI() {
 // BAN NHAU
 function startBattle() {
     AudioController.play('battlestart');
+    toggleFleetBtn.style.display = 'none';
     shipDock.style.display = 'none';
     document.querySelector('.orientation-wrapper').style.display = 'none';
     document.querySelector('.setup-section').style.display = 'none';
@@ -333,6 +334,12 @@ function lockFleet(playerNum) {
             G_STATE.currentPlayer = 2;
             draggedShipIndex = null;
             clearHover();
+            toggleFleetBtn.style.display = 'block';
+            document.getElementById('btn-random-p1').style.display = 'none';
+            document.getElementById('btn-random-p2').style.display = 'block';
+
+            G_STATE.players[1].boardDOM.classList.add('fleet-hidden');
+            G_STATE.players[2].boardDOM.classList.remove('fleet-hidden');
             statusText.innerText = "✅ Player 1 locked! 🎯 Player 2: Set up your fleet!";
             renderBoard(G_STATE.players[2].board, 'cpu-board', { 
                 pArmy: G_STATE.players[2].army,

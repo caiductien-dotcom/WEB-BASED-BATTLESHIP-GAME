@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -18,14 +19,16 @@
         // 2. kiem tra xem co ve khong
         if (!localStorage.getItem("userToken")) {
             alert("Bạn chưa đăng nhập! Vui lòng quay lại trang Login.");
-            window.location.href = "https://haduyminh5a1.github.io/Frontend/pages/login2.html"; 
+            window.location.href = "https://haduyminh5a1.github.io/Frontend/pages/login2.html";
         }
     </script>
 </head>
+
 <body>
     <h1>BATTLESHIP GAME</h1>
-    <button id="btn-logout" style="position: fixed; top: 20px; right: 20px; z-index: 1000; padding: 10px 20px; background: #e74c3c; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; box-shadow: 0 4px #c0392b;">
-    ĐĂNG XUẤT
+    <button id="btn-logout"
+        style="position: fixed; top: 20px; right: 20px; z-index: 1000; padding: 10px 20px; background: #e74c3c; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; box-shadow: 0 4px #c0392b;">
+        LOG OUT
     </button>
     <div id="start-modal" class="modal-overlay" style="display: flex;">
         <div class="modal-content">
@@ -33,7 +36,8 @@
             <p>Select your engagement mode:</p>
             <div style="display: flex; gap: 20px; justify-content: center; margin-top: 20px;">
                 <button id="btn-single-player" class="start-game-btn">VS A.I</button>
-                <button id="btn-local-pvp" class="start-game-btn" style="background: #e74c3c; box-shadow: 0 8px 0px #c0392b;">LOCAL PVP</button>
+                <button id="btn-local-pvp" class="start-game-btn"
+                    style="background: #e74c3c; box-shadow: 0 8px 0px #c0392b;">LOCAL PVP</button>
             </div>
         </div>
     </div>
@@ -47,7 +51,7 @@
     </div>
 
     <div id="main-game-area" style="display: none;">
-        
+
         <div class="top-info">
             <div class="difficulty-group">
                 <label for="difficulty-select">Difficulty:</label>
@@ -61,6 +65,12 @@
 
         <div class="setup-section">
             <div id="ship-dock" class="dock-container"></div>
+
+            <div class="random-wrapper">
+                <button id="btn-random-p1" class="toggle-btn">🎲 Random</button>
+                <button id="btn-random-p2" class="toggle-btn" style="display: none;">🎲 Random</button>
+            </div>
+
             <div class="orientation-wrapper">
                 <div class="button-group">
                     <button id="btn-horizontal" class="active">Horizontal</button>
@@ -72,27 +82,28 @@
         <div class="game-container">
             <div class="board-wrapper p1-area">
                 <div class="board-header">
-                    <h3 style="margin: 0;">Your Fleet</h3>
-                <div style="display: flex; gap: 5px;">
-                    <button id="btn-random-p1" class="toggle-btn" style="padding: 5px 10px; font-size: 0.7rem;">🎲 Random</button>
-                    <button id="btn-lock-p1" class="toggle-btn" style="padding: 5px 10px; font-size: 0.7rem;">🔒 Lock</button>
-                    <button id="toggle-fleet-btn" class="toggle-btn" style="padding: 5px 10px; font-size: 0.7rem;">👁️ Show</button>
-                </div>
+                    <h3 style="margin: 0;">Player 1</h3>
+                    <div style="display: flex; gap: 5px;">
+                        <button id="btn-lock-p1" class="toggle-btn" style="padding: 5px 10px; font-size: 0.7rem;">🔒
+                            Lock</button>
+                        <button id="toggle-fleet-btn" class="toggle-btn"
+                            style="padding: 5px 10px; font-size: 0.7rem;">👁️ Show</button>
+                    </div>
                 </div>
                 <div id="player-board" class="board fleet-hidden"></div>
             </div>
-    
-    <div class="board-wrapper p2-area">
-        <div class="board-header">
-            <h3 style="margin: 0;">Enemy Fleet</h3>
-        <div style="display: flex; gap: 5px;">
-            <button id="btn-random-p2" class="toggle-btn" style="display:none; padding: 5px 10px; font-size: 0.7rem;">🎲 Random</button>
-            <button id="btn-lock-p2" class="toggle-btn" style="display:none; padding: 5px 10px; font-size: 0.7rem;">🔒 Lock</button>
+
+            <div class="board-wrapper p2-area">
+                <div class="board-header">
+                    <h3 style="margin: 0;">Player 2</h3>
+                    <div style="display: flex; gap: 5px;">
+                        <button id="btn-lock-p2" class="toggle-btn"
+                            style="display:none; padding: 5px 10px; font-size: 0.7rem;">🔒 Lock</button>
+                    </div>
+                </div>
+                <div id="cpu-board" class="board"></div>
+            </div>
         </div>
-        </div>
-        <div id="cpu-board" class="board"></div>
-    </div>
-    </div>
     </div>
     <div id="game-modal" class="modal-overlay">
         <div class="modal-content">
@@ -115,4 +126,5 @@
     <script type="module" src="./js/audio.js"></script>
     <script src="./js/logout.js"></script>
 </body>
+
 </html>
