@@ -74,7 +74,6 @@ btnLocalPvP.addEventListener('click', () => {
 
     // P1 setup truoc: hien random P1, an random P2
     document.getElementById('btn-random-p1').style.display = 'block';
-    document.getElementById('btn-random-p2').style.display = 'none';
     document.getElementById('btn-lock-p2').style.display = 'block';
 
     // Render ca 2 board ngay tu dau
@@ -120,7 +119,11 @@ btnReady.addEventListener('click', () => {
 
 // AN/HIEN TAU (PvP)
 toggleFleetBtn.addEventListener('click', () => {
-    const myBoardDOM = G_STATE.players[activeSetupPlayer].boardDOM;
+    const targetPlayer = (G_STATE.phase === phase.BATTLE) 
+        ? G_STATE.currentPlayer 
+        : activeSetupPlayer;
+    
+    const myBoardDOM = G_STATE.players[targetPlayer].boardDOM;
     myBoardDOM.classList.toggle('fleet-hidden');
 
     const isHidden = myBoardDOM.classList.contains('fleet-hidden');
@@ -128,7 +131,6 @@ toggleFleetBtn.addEventListener('click', () => {
     toggleFleetBtn.style.background = isHidden ? "white" : "var(--accent-teal)";
     toggleFleetBtn.style.color = isHidden ? "var(--accent-teal)" : "white";
 });
-
 function clearHover() {
     document.querySelectorAll('.cell').forEach(c => c.classList.remove('preview-valid', 'preview-invalid'));
 }
@@ -298,8 +300,7 @@ function randomPlaceAllShips(playerNum) {
     refreshSetupUI();
 }
 
-document.getElementById('btn-random-p1').addEventListener('click', () => randomPlaceAllShips(1));
-document.getElementById('btn-random-p2').addEventListener('click', () => randomPlaceAllShips(2));
+document.getElementById('btn-random-p1').addEventListener('click', () => randomPlaceAllShips(activeSetupPlayer));
 
 function lockFleet(playerNum) {
     // khong phai luot cua ban
@@ -319,7 +320,7 @@ function lockFleet(playerNum) {
     G_STATE.locked[playerNum] = true;
     
     // disable nut random va lock
-    document.getElementById(`btn-random-p${playerNum}`).disabled = true;
+    document.getElementById('btn-random-p1').disabled = true;
     document.getElementById(`btn-lock-p${playerNum}`).innerText = "✅ Locked";
     document.getElementById(`btn-lock-p${playerNum}`).disabled = true;
 
@@ -335,8 +336,6 @@ function lockFleet(playerNum) {
             draggedShipIndex = null;
             clearHover();
             toggleFleetBtn.style.display = 'block';
-            document.getElementById('btn-random-p1').style.display = 'none';
-            document.getElementById('btn-random-p2').style.display = 'block';
 
             G_STATE.players[1].boardDOM.classList.add('fleet-hidden');
             G_STATE.players[2].boardDOM.classList.remove('fleet-hidden');
