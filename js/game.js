@@ -68,7 +68,7 @@ btnLocalPvP.addEventListener('click', () => {
     document.querySelector('.difficulty-group').style.display = 'none';
     
     // Logic: an nut tang hinh khi P1 dang setup
-    toggleFleetBtn.style.display = 'none'; 
+    toggleFleetBtn.style.display = 'block'; 
     G_STATE.players[1].boardDOM.classList.remove('fleet-hidden');
     G_STATE.players[2].boardDOM.classList.remove('fleet-hidden');
 
@@ -261,7 +261,7 @@ function refreshSetupUI() {
 // BAN NHAU
 function startBattle() {
     AudioController.play('battlestart');
-    toggleFleetBtn.style.display = 'none';
+    if (!isPvP) toggleFleetBtn.style.display = 'none';
     shipDock.style.display = 'none';
     document.querySelector('.orientation-wrapper').style.display = 'none';
     document.querySelector('.setup-section').style.display = 'none';
@@ -335,7 +335,6 @@ function lockFleet(playerNum) {
             G_STATE.currentPlayer = 2;
             draggedShipIndex = null;
             clearHover();
-            toggleFleetBtn.style.display = 'block';
 
             G_STATE.players[1].boardDOM.classList.add('fleet-hidden');
             G_STATE.players[2].boardDOM.classList.remove('fleet-hidden');
