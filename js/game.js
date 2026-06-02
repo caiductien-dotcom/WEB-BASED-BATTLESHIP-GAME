@@ -1,5 +1,5 @@
 import { createBoatData, placeShip, receiveAttack, defeated, isValidPlacement } from "./board.js";
-import { renderBoard, renderDock } from "./ui.js"; 
+import { renderBoard, renderDock } from "./ui.js";
 import { board_size, direction, phase } from "./constants.js";
 import { playerShipArmy } from "./ship.js";
 import { placeCPUShips, easyBotAttack, hardBotAttack, memoryReset } from "./ai.js";
@@ -7,15 +7,15 @@ import { AudioController } from "./audio.js";
 
 const G_STATE = {
     players: {
-        1: { 
-            board: createBoatData(), 
-            army: playerShipArmy(), 
-            boardDOM: document.getElementById('player-board') 
+        1: {
+            board: createBoatData(),
+            army: playerShipArmy(),
+            boardDOM: document.getElementById('player-board')
         },
-        2: { 
-            board: createBoatData(), 
-            army: playerShipArmy(), 
-            boardDOM: document.getElementById('cpu-board') 
+        2: {
+            board: createBoatData(),
+            army: playerShipArmy(),
+            boardDOM: document.getElementById('cpu-board')
         }
     },
     phase: phase.SETUP,
@@ -25,7 +25,7 @@ const G_STATE = {
 
 let currentDirection = direction.HORIZONTAL;
 let isGameOver = false;
-let canPlayerAttack = true; 
+let canPlayerAttack = true;
 let draggedShipIndex = null;
 let isPvP = false;
 let activeSetupPlayer = 1; // player nao dang duoc dat tau
@@ -49,9 +49,9 @@ btnSinglePlayer.addEventListener('click', () => {
     isPvP = false;
     startModal.style.display = 'none';
     mainGameArea.style.display = 'flex';
-    
+
     // Logic: an nut tang hinh
-    toggleFleetBtn.style.display = 'none'; 
+    toggleFleetBtn.style.display = 'none';
     G_STATE.players[1].boardDOM.classList.remove('fleet-hidden');
     G_STATE.players[2].boardDOM.classList.remove('fleet-hidden');
 
@@ -66,9 +66,9 @@ btnLocalPvP.addEventListener('click', () => {
     startModal.style.display = 'none';
     mainGameArea.style.display = 'flex';
     document.querySelector('.difficulty-group').style.display = 'none';
-    
+
     // Logic: an nut tang hinh khi P1 dang setup
-    toggleFleetBtn.style.display = 'block'; 
+    toggleFleetBtn.style.display = 'block';
     G_STATE.players[1].boardDOM.classList.remove('fleet-hidden');
     G_STATE.players[2].boardDOM.classList.remove('fleet-hidden');
 
@@ -77,7 +77,7 @@ btnLocalPvP.addEventListener('click', () => {
     document.getElementById('btn-lock-p2').style.display = 'block';
 
     // Render ca 2 board ngay tu dau
-    renderBoard(G_STATE.players[1].board, 'player-board', { 
+    renderBoard(G_STATE.players[1].board, 'player-board', {
         pArmy: G_STATE.players[1].army,
         onShipDragStart: (idx) => { draggedShipIndex = idx; },
         onShipDragEnd: () => { draggedShipIndex = null; clearHover(); }
@@ -92,7 +92,7 @@ btnLocalPvP.addEventListener('click', () => {
 
 modalBtn.onclick = () => {
     gameModal.style.display = 'none';
-    location.reload(); 
+    location.reload();
 };
 
 function showFog(title) {
@@ -102,11 +102,11 @@ function showFog(title) {
 
 btnReady.addEventListener('click', () => {
     fogModal.style.display = 'none';
-    
+
     if (G_STATE.phase === phase.BATTLE) {
         G_STATE.players[1].boardDOM.classList.add('fleet-hidden');
         G_STATE.players[2].boardDOM.classList.add('fleet-hidden');
-        
+
         toggleFleetBtn.innerText = "👁️ Show Fleet";
         toggleFleetBtn.style.background = "white";
         toggleFleetBtn.style.color = "var(--accent-teal)";
@@ -119,10 +119,10 @@ btnReady.addEventListener('click', () => {
 
 // AN/HIEN TAU (PvP)
 toggleFleetBtn.addEventListener('click', () => {
-    const targetPlayer = (G_STATE.phase === phase.BATTLE) 
-        ? G_STATE.currentPlayer 
+    const targetPlayer = (G_STATE.phase === phase.BATTLE)
+        ? G_STATE.currentPlayer
         : activeSetupPlayer;
-    
+
     const myBoardDOM = G_STATE.players[targetPlayer].boardDOM;
     myBoardDOM.classList.toggle('fleet-hidden');
 
@@ -143,12 +143,12 @@ function handleHover(row, col) {
     const ship = pData.army[draggedShipIndex];
     if (!ship) return;
 
-    const targetBoardId = (G_STATE.currentPlayer === 1) ? '#player-board .cell' : '#cpu-board .cell';    
+    const targetBoardId = (G_STATE.currentPlayer === 1) ? '#player-board .cell' : '#cpu-board .cell';
     const cells = document.querySelectorAll(targetBoardId);
-    
+
     cells.forEach(c => c.classList.remove('preview-valid', 'preview-invalid'));
     const isValid = isValidPlacement(pData.board, ship.shipSize, row, col, currentDirection);
-    
+
     for (let i = 0; i < ship.shipSize; i++) {
         const r = row + i * currentDirection.dy;
         const c = col + i * currentDirection.dx;
@@ -197,7 +197,7 @@ function initDragAndDrop() {
 
     const pData = G_STATE.players[G_STATE.currentPlayer];
     const cells = pData.boardDOM.querySelectorAll('.cell');
-    
+
     cells.forEach((cell, index) => {
         const r = Math.floor(index / 10);
         const c = index % 10;
@@ -238,10 +238,10 @@ function initDragAndDrop() {
             if (!ship) return;
 
             const success = placeShip({ board: pData.board, ship, row: r, col: c, dirVector: currentDirection });
-            if (success) { 
+            if (success) {
                 AudioController.play('placingShip');
                 draggedShipIndex = null; // reset sau khi dat xong
-                refreshSetupUI(); 
+                refreshSetupUI();
             }
         };
     });
@@ -249,7 +249,7 @@ function initDragAndDrop() {
 // setup lai UI sau moi lan dat tau 
 function refreshSetupUI() {
     const pData = G_STATE.players[G_STATE.currentPlayer];
-    renderBoard(pData.board, pData.boardDOM.id, { 
+    renderBoard(pData.board, pData.boardDOM.id, {
         pArmy: pData.army,
         onShipDragStart: (idx) => { draggedShipIndex = idx; },
         onShipDragEnd: () => { draggedShipIndex = null; clearHover(); }
@@ -269,7 +269,7 @@ function startBattle() {
     G_STATE.players[2].boardDOM.parentElement.style.display = 'block';
 
     if (!isPvP) {
-        placeCPUShips(G_STATE.players[2].board, G_STATE.players[2].army); 
+        placeCPUShips(G_STATE.players[2].board, G_STATE.players[2].army);
         renderBoard(G_STATE.players[2].board, 'cpu-board', { onCellClick: handleAttack });
     } else {
         G_STATE.currentPlayer = 1;
@@ -310,17 +310,22 @@ function lockFleet(playerNum) {
     }
 
     const pData = G_STATE.players[playerNum];
-    
+
     // chua dat het tau khong dc lock
     if (!pData.army.every(s => s.placed)) {
         statusText.innerText = `⚠️ Player ${playerNum}: Place all ships first!`;
         return;
     }
-    
+
     G_STATE.locked[playerNum] = true;
-    
+
     // disable nut random va lock
-    document.getElementById('btn-random-p1').disabled = true;
+    if (isPvP && !G_STATE.locked[2]) {
+        // P1 vua lock player chua -> re-enable random cho P2
+        document.getElementById('btn-random-p1').disabled = false;
+    } else {
+        document.getElementById('btn-random-p1').disabled = true;
+    }
     document.getElementById(`btn-lock-p${playerNum}`).innerText = "✅ Locked";
     document.getElementById(`btn-lock-p${playerNum}`).disabled = true;
 
@@ -339,7 +344,7 @@ function lockFleet(playerNum) {
             G_STATE.players[1].boardDOM.classList.add('fleet-hidden');
             G_STATE.players[2].boardDOM.classList.remove('fleet-hidden');
             statusText.innerText = "✅ Player 1 locked! 🎯 Player 2: Set up your fleet!";
-            renderBoard(G_STATE.players[2].board, 'cpu-board', { 
+            renderBoard(G_STATE.players[2].board, 'cpu-board', {
                 pArmy: G_STATE.players[2].army,
                 onShipDragStart: (idx) => { draggedShipIndex = idx; },
                 onShipDragEnd: () => { draggedShipIndex = null; clearHover(); }
@@ -364,13 +369,13 @@ function handleAttack(row, col) {
     const opponent = G_STATE.players[opponentId];
 
     const result = receiveAttack(opponent.board, row, col, opponent.army);
-    if (result === "invalid") return; 
+    if (result === "invalid") return;
 
     if (result === "hit" || result === "sunk") AudioController.play('hit');
     else if (result === "miss") AudioController.play('miss');
 
     // ve lai bang doi thu de hien ket qua ban
-    renderBoard(opponent.board, opponent.boardDOM.id, { 
+    renderBoard(opponent.board, opponent.boardDOM.id, {
         onCellClick: handleAttack,
         shotClass: `p${G_STATE.currentPlayer}-shot`
     });
@@ -389,22 +394,22 @@ function handleAttack(row, col) {
         setTimeout(() => {
             G_STATE.currentPlayer = opponentId;
             showFog(`PLAYER ${G_STATE.currentPlayer}'S TURN`);
-            
+
             const myData = G_STATE.players[G_STATE.currentPlayer];
             const opData = G_STATE.players[opponentId === 1 ? 2 : 1];
             renderBoard(myData.board, myData.boardDOM.id, { pArmy: myData.army });
             renderBoard(opData.board, opData.boardDOM.id, { onCellClick: handleAttack });
-            
+
             canPlayerAttack = true;
         }, 800);
-    } 
+    }
     else {
         // logic danh voi AI 
         statusText.innerText = "Status: Enemy is calculating...";
         setTimeout(() => {
             if (isGameOver) return;
-            let botResult = (difficultySelect.value === 'hard') ? 
-                hardBotAttack(G_STATE.players[1].board, G_STATE.players[1].army) : 
+            let botResult = (difficultySelect.value === 'hard') ?
+                hardBotAttack(G_STATE.players[1].board, G_STATE.players[1].army) :
                 easyBotAttack(G_STATE.players[1].board, G_STATE.players[1].army);
 
             if (botResult === "hit" || botResult === "sunk") AudioController.play('hit');
