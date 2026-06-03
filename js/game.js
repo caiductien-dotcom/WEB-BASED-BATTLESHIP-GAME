@@ -384,6 +384,13 @@ function handleAttack(row, col) {
     if (defeated(opponent.army)) {
         isGameOver = true;
         AudioController.play('victory');
+
+        // Cong diem khi thang AI (single player)
+        if (!isPvP) {
+            const mode = difficultySelect.value; // "easy" hoac "hard"
+            submitScore(mode);
+        }
+
         showGameModal("VICTORY!", `PLAYER ${G_STATE.currentPlayer} WINS!`);
         return;
     }
@@ -426,6 +433,33 @@ function handleAttack(row, col) {
                 statusText.innerText = "Status: Your turn! Attack!";
             }
         }, 800);
+    }
+}
+
+// Gui diem len server sau khi thang AI
+async function submitScore(mode) {
+    const token = localStorage.getItem("userToken");
+    if (!token) return; // chua dang nhap thi bo qua, khong bao loi
+
+    try {
+        const res = await fetch(`${window.BASE_URL}/api/update-score`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            },
+            body: JSON.stringify({ mode }) // "easy" hoac "hard"
+        });
+        const data = await res.json();
+        if (data.success) {
+            const pts = mode === "hard" ? 3 : 1;
+            console.log(`[SCORE] +${pts} pts (${mode}) => Total: ${data.score}`);
+            // Hien diem trong modal luon
+            const modalMsg = document.getElementById('modal-message');
+            modalMsg.innerText += `\n⭐ +${pts} point${pts > 1 ? "s" : ""}! Total score: ${data.score}`;
+        }
+    } catch (err) {
+        console.error("[SCORE] Update failed:", err);
     }
 }
 
