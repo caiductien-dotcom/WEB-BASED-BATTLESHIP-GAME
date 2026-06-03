@@ -5,9 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Battleship Game</title>
-    <link rel="stylesheet" href="style.css">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="./css/style3.css">
+    
     <script>
-        // 1. nhat token url ngay lap tuc
         const urlParams = new URLSearchParams(window.location.search);
         const tokenFromUrl = urlParams.get('token');
 
@@ -15,111 +18,240 @@
             localStorage.setItem("userToken", tokenFromUrl);
             window.history.replaceState({}, document.title, window.location.pathname);
         }
-
-        // 2. kiem tra xem co ve khong
-        if (!localStorage.getItem("userToken")) {
-            alert("Bạn chưa đăng nhập! Vui lòng quay lại trang Login.");
-            window.location.href = "https://haduyminh5a1.github.io/Frontend/pages/login2.html";
-        }
     </script>
 </head>
 
 <body>
-    <h1>BATTLESHIP GAME</h1>
-    <button id="btn-logout"
-        style="position: fixed; top: 20px; right: 20px; z-index: 1000; padding: 10px 20px; background: #e74c3c; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; box-shadow: 0 4px #c0392b;">
-        LOG OUT
-    </button>
-    <div id="start-modal" class="modal-overlay" style="display: flex;">
-        <div class="modal-content">
-            <h2 id="start-title">BATTLESHIP COMMAND</h2>
-            <p>Select your engagement mode:</p>
-            <div style="display: flex; gap: 20px; justify-content: center; margin-top: 20px;">
-                <button id="btn-single-player" class="start-game-btn">VS A.I</button>
-                <button id="btn-local-pvp" class="start-game-btn"
-                    style="background: #e74c3c; box-shadow: 0 8px 0px #c0392b;">LOCAL PVP</button>
-            </div>
-        </div>
-    </div>
 
-    <div id="fog-of-war-modal" class="modal-overlay" style="display: none; z-index: 200; backdrop-filter: blur(15px);">
-        <div class="modal-content" style="background: rgba(255, 255, 255, 0.9);">
-            <h2 id="fog-title" style="font-size: 2.5rem; color: #e74c3c;">PLAYER 2'S TURN</h2>
-            <p>Please pass the device to your opponent. No peeking!</p>
-            <button id="btn-ready" class="start-game-btn" style="margin-top: 20px;">I'M READY</button>
-        </div>
-    </div>
+    <div id="game-page" style="display: none;">
+        <button id="btn-logout"
+            style="position: fixed; top: 20px; right: 20px; z-index: 1000; padding: 10px 20px; background: #e74c3c; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; box-shadow: 0 4px #c0392b;">
+            LOG OUT
+        </button>
 
-    <div id="main-game-area" style="display: none;">
-
-        <div class="top-info">
-            <div class="difficulty-group">
-                <label for="difficulty-select">Difficulty:</label>
-                <select id="difficulty-select">
-                    <option value="easy">Easy (Random)</option>
-                    <option value="hard" selected>Hard (AI Hunter)</option>
-                </select>
-            </div>
-            <p id="status-text">Status: Preparing fleet...</p>
-        </div>
-
-        <div class="setup-section">
-            <div id="ship-dock" class="dock-container"></div>
-
-            <div class="random-wrapper">
-                <button id="btn-random-p1" class="toggle-btn">🎲 Random</button>
-                <button id="toggle-fleet-btn" class="toggle-btn" style="display:none;">👁️ Show Fleet</button>
-            </div>
-
-            <div class="orientation-wrapper">
-                <div class="button-group">
-                    <button id="btn-horizontal" class="active">Horizontal</button>
-                    <button id="btn-vertical">Vertical</button>
+        <h1>BATTLESHIP GAME</h1>
+        
+        <div id="start-modal" class="modal-overlay" style="display: flex;">
+            <div class="modal-content">
+                <h2 id="start-title">BATTLESHIP COMMAND</h2>
+                <p>Select your engagement mode:</p>
+                <div style="display: flex; gap: 20px; justify-content: center; margin-top: 20px;">
+                    <button id="btn-single-player" class="start-game-btn">VS A.I</button>
+                    <button id="btn-local-pvp" class="start-game-btn"
+                        style="background: #e74c3c; box-shadow: 0 8px 0px #c0392b;">LOCAL PVP</button>
                 </div>
             </div>
         </div>
 
-        <div class="game-container">
-            <div class="board-wrapper p1-area">
-                <div class="board-header">
-                    <h3 style="margin: 0;">Player 1</h3>
-                    <div style="display: flex; gap: 5px;">
-                        <button id="btn-lock-p1" class="toggle-btn" style="padding: 5px 10px; font-size: 0.7rem;">🔒
-                            Lock</button>
+        <div id="fog-of-war-modal" class="modal-overlay" style="display: none; z-index: 200; backdrop-filter: blur(15px);">
+            <div class="modal-content" style="background: rgba(255, 255, 255, 0.9);">
+                <h2 id="fog-title" style="font-size: 2.5rem; color: #e74c3c;">PLAYER 2'S TURN</h2>
+                <p>Please pass the device to your opponent. No peeking!</p>
+                <button id="btn-ready" class="start-game-btn" style="margin-top: 20px;">I'M READY</button>
+            </div>
+        </div>
+
+        <div id="main-game-area" style="display: none;">
+            <div class="top-info">
+                <div class="difficulty-group">
+                    <label for="difficulty-select">Difficulty:</label>
+                    <select id="difficulty-select">
+                        <option value="easy">Easy (Random)</option>
+                        <option value="hard" selected>Hard (AI Hunter)</option>
+                    </select>
+                </div>
+                <p id="status-text">Status: Preparing fleet...</p>
+            </div>
+
+            <div class="setup-section">
+                <div id="ship-dock" class="dock-container"></div>
+                <div class="random-wrapper">
+                    <button id="btn-random-p1" class="toggle-btn">🎲 Random</button>
+                    <button id="toggle-fleet-btn" class="toggle-btn" style="display:none;">👁️ Show Fleet</button>
+                </div>
+                <div class="orientation-wrapper">
+                    <div class="button-group">
+                        <button id="btn-horizontal" class="active">Horizontal</button>
+                        <button id="btn-vertical">Vertical</button>
                     </div>
                 </div>
-                <div id="player-board" class="board fleet-hidden"></div>
             </div>
 
-            <div class="board-wrapper p2-area">
-                <div class="board-header">
-                    <h3 style="margin: 0;">Player 2</h3>
-                    <div style="display: flex; gap: 5px;">
-                        <button id="btn-lock-p2" class="toggle-btn"
-                            style="display:none; padding: 5px 10px; font-size: 0.7rem;">🔒 Lock</button>
+            <div class="game-container">
+                <div class="board-wrapper p1-area">
+                    <div class="board-header">
+                        <h3 style="margin: 0;">Player 1</h3>
+                        <div style="display: flex; gap: 5px;">
+                            <button id="btn-lock-p1" class="toggle-btn" style="padding: 5px 10px; font-size: 0.7rem;">🔒 Lock</button>
+                        </div>
                     </div>
+                    <div id="player-board" class="board fleet-hidden"></div>
                 </div>
-                <div id="cpu-board" class="board"></div>
+
+                <div class="board-wrapper p2-area">
+                    <div class="board-header">
+                        <h3 style="margin: 0;">Player 2</h3>
+                        <div style="display: flex; gap: 5px;">
+                            <button id="btn-lock-p2" class="toggle-btn" style="display:none; padding: 5px 10px; font-size: 0.7rem;">🔒 Lock</button>
+                        </div>
+                    </div>
+                    <div id="cpu-board" class="board"></div>
+                </div>
             </div>
         </div>
-    </div>
-    <div id="game-modal" class="modal-overlay">
-        <div class="modal-content">
-            <h2 id="modal-title">Notification</h2>
-            <p id="modal-message"></p>
-            <button id="modal-btn">Confirm</button>
+
+        <div id="game-modal" class="modal-overlay">
+            <div class="modal-content">
+                <h2 id="modal-title">Notification</h2>
+                <p id="modal-message"></p>
+                <button id="modal-btn">Confirm</button>
+            </div>
+        </div>
+
+        <div id="audio-container" style="display: none;">
+            <audio id="sfx-hit" src="./assets/sfx/hit.mp3" preload="auto"></audio>
+            <audio id="sfx-miss" src="./assets/sfx/miss.mp3" preload="auto"></audio>
+            <audio id="sfx-placingShip" src="./assets/sfx/placingShip.mp3" preload="auto"></audio>
+            <audio id="sfx-battlestart" src="./assets/sfx/battlestart.mp3" preload="auto"></audio>
+            <audio id="sfx-defeat" src="./assets/sfx/defeat.mp3" preload="auto"></audio>
+            <audio id="sfx-victory" src="./assets/sfx/victory.mp3" preload="auto"></audio>
+            <audio id="bgm-ocean" src="./assets/sfx/bgm.mp3" preload="auto" loop></audio>
         </div>
     </div>
 
-    <div id="audio-container" style="display: none;">
-        <audio id="sfx-hit" src="./assets/sfx/hit.mp3" preload="auto"></audio>
-        <audio id="sfx-miss" src="./assets/sfx/miss.mp3" preload="auto"></audio>
-        <audio id="sfx-placingShip" src="./assets/sfx/placingShip.mp3" preload="auto"></audio>
-        <audio id="sfx-battlestart" src="./assets/sfx/battlestart.mp3" preload="auto"></audio>
-        <audio id="sfx-defeat" src="./assets/sfx/defeat.mp3" preload="auto"></audio>
-        <audio id="sfx-victory" src="./assets/sfx/victory.mp3" preload="auto"></audio>
-        <audio id="bgm-ocean" src="./assets/sfx/bgm.mp3" preload="auto" loop></audio>
+
+    <div id="login-page" class="container" style="display: none;">
+        <div class="auth-card">
+            <div class="title">Login</div>
+            <div class="subtitle">Welcome back</div>
+
+            <div class="input-group">
+                <label>Email</label>
+                <input type="text" class="input" id="email">
+            </div>
+
+            <div class="input-group">
+                <label>Password</label>
+                <div class="password-wrapper">
+                    <input type="password" class="input" id="password">
+                    <span class="toggle-password" id="toggleLoginPassword">👁</span>
+                </div>
+            </div>
+
+            <div class="header-text" style="text-align: right; margin-top: -8px; margin-bottom: 20px;">
+                <a href="#" class="link" onclick="switchPage('forgot'); return false;">Forgot password?</a>
+            </div>
+
+            <button class="btn" id="btnLogin">Login</button>
+
+            <div class="footer-text">
+                Don't have account?
+                <a href="#" class="link" onclick="switchPage('signup'); return false;">Sign up</a>
+            </div>
+        </div>
     </div>
+
+
+    <div id="signup-page" class="container" style="display: none;">
+        <div class="auth-card">
+            <div class="title">Sign Up</div>
+            <div class="subtitle">Create your account</div>
+
+            <div class="input-group">
+                <label>Name</label>
+                <input type="text" class="input" id="name">
+            </div>
+
+            <div class="input-group">
+                <label>Email</label>
+                <input type="text" class="input" id="email-signup">
+            </div>
+            <small id="email-msg"></small>
+
+            <div class="input-group">
+                <label>Password</label>
+                <div class="password-wrapper">
+                    <input type="password" class="input" id="newPassword">
+                    <span class="toggle-password" id="toggleSignupPassword">👁</span>
+                </div>
+                <small id="pass-msg"></small>
+            </div>
+
+            <button class="btn" id="btnSignup">Create Account</button>
+
+            <div class="footer-text">
+                Already have account?
+                <a href="#" class="link" onclick="switchPage('login'); return false;">Login</a>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="forgot-page" class="container" style="display: none;">
+        <div class="auth-card">
+            <div class="title">Forgot Password</div>
+            <div class="subtitle">Enter your email</div>
+
+            <div class="input-group">
+                <label>Email</label>
+                <input type="text" class="input" id="email-forgot">
+            </div>
+            <button class="btn" id="btnForgot">Send OTP</button>
+            
+            <div class="footer-text">
+                <a href="#" class="link" onclick="switchPage('login'); return false;">Back to login</a>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="reset-page" class="container" style="display: none;">
+        <div class="auth-card">
+            <div class="title">Reset Password</div>
+            <div class="subtitle">Please enter OTP and new password</div>
+
+            <div class="input-group">
+                <label>OTP</label>
+                <input type="text" class="input" id="otp" placeholder="Enter 4 digits" style="text-align: center;">
+
+                <div class="resend-container">
+                    <span>Didn't receive code? </span>
+                    <a class="resend-link" id="btnResend">Resend code</a>
+                    <span id="countdown"></span>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>New Password</label>
+                <div class="password-wrapper">
+                    <input type="password" class="input" id="resetNewPassword">
+                    <span class="toggle-password" id="toggleNewPassword">👁</span>
+                </div>
+                <small id="reset-pass-msg"></small>
+            </div>
+
+            <div class="input-group">
+                <label>Re-enter password</label>
+                <div class="password-wrapper">
+                    <input type="password" class="input" id="confirmPassword">
+                    <span class="toggle-password" id="toggleConfirmPassword">👁</span>
+                </div>
+            </div>
+
+            <button class="btn" id="btnResetAll">Change Password</button>
+            
+            <div class="footer-text">
+                <a href="#" class="link" onclick="switchPage('forgot'); return false;">Back to request OTP</a>
+            </div>
+        </div>
+    </div>
+
+    <div id="custom-alert" style="display: none; animation: popIn 0.3s ease;"></div>
+
+    <script type="module" src="./js/utils.js"></script>
+    <script type="module" src="./js/auth.js"></script>
+    <script type="module" src="./js/forgot.js"></script>
+    
     <script type="module" src="./js/game.js"></script>
     <script type="module" src="./js/audio.js"></script>
     <script src="./js/logout.js"></script>

@@ -1,0 +1,213 @@
+.auth-card {
+  width: 380px;
+  background: white !important; /* Ep form luon mau trang */
+  padding: 32px;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  font-family: "Inter", sans-serif; /* Ep font rieng cho cum Auth */
+}
+
+/* layout lop phu SPA */
+.container {
+  min-height: 100vh;
+  display: none; /* Mac dinh an, hien flex bang ham switchPage */
+  align-items: center;
+  justify-content: center;
+  background: #f5f7fb !important; /* Mau nen sang rieng biet cho form */
+  pointer-events: none;
+  position: fixed; /* Noi len doc lap de len ban co game */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 99999; /* Nam tren cung tuyet doi khi chua dang nhap */
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+/* TEXT */
+.title {
+  font-family: "Inter", sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: #1e293b !important;
+}
+
+.subtitle {
+  font-family: "Inter", sans-serif;
+  font-size: 14px;
+  color: #64748b !important;
+  margin-bottom: 25px;
+}
+
+/* INPUT */
+.input-group {
+  margin-bottom: 16px;
+  text-align: left;
+}
+
+.input-group label {
+  font-family: "Inter", sans-serif;
+  font-size: 13px;
+  display: block;
+  margin-bottom: 6px;
+  color: #1e293b !important;
+}
+
+.input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  outline: none;
+  font-family: "Inter", sans-serif;
+  background: white !important;
+  color: #1e293b !important;
+}
+
+.input:focus {
+  border-color: #2563eb;
+}
+
+/* BUTTON */
+.btn {
+  width: 100%;
+  padding: 12px;
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-family: "Inter", sans-serif;
+}
+
+.btn:hover:not(:disabled) {
+  background: #1d4ed8;
+}
+
+.resend-container {
+    margin-top: 15px;
+    font-size: 0.85rem; 
+    color: #94a3b8;   
+}
+
+.resend-link {
+    cursor: pointer;
+    color: #3b82f6;    
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.resend-link:hover {
+    text-decoration: underline;
+}
+
+.resend-link.disable {
+    color: #64748b; 
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+#countdown {
+    font-size: 0.8rem;   
+    color: #94a3b8;       
+    opacity: 0.7;         
+    font-weight: normal;  
+    margin-left: 5px;
+}
+
+/* LINK */
+.link {
+  font-size: 13px;
+  color: #2563eb;
+  text-decoration: none;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+/* HEAD */
+.header-text {
+  margin-top: 20px;
+  font-size: 13px;
+  text-align: right;
+}
+
+/* FOOT */
+.footer-text {
+  margin-top: 20px;
+  font-size: 13px;
+  text-align: center;
+  color: #64748b;
+}
+
+.otp-container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.otp-input {
+  width: 45px;
+  height: 50px;
+  text-align: center;
+  font-size: 18px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+}
+
+/* PASSWORD WRAPPER */
+.password-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.password-wrapper .input {
+  padding-right: 40px;
+  width: 100%;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  color: #64748b;
+  user-select: none;
+  z-index: 10;
+  padding: 0;
+}
+
+.toggle-password:hover {
+  color: #2563eb;
+}
+
+/* NUT XAM PHANG KHI DISABLED */
+.btn:disabled {
+  background-color: #bdc3c7 !important;
+  color: #7f8c8d !important;
+  opacity: 1 !important;
+  cursor: not-allowed !important;
+  box-shadow: none !important;
+}
+
+@keyframes popIn {
+    0% {
+        transform: translate(-50%, calc(-50% + 20px));
+        opacity: 0;
+    }
+    100% {
+        transform: translate(-50%, -50%);
+        opacity: 1;
+    }
+}
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+    display: none !important;
+}

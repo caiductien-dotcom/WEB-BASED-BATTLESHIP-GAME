@@ -144,11 +144,11 @@ h1 {
     cursor: grabbing; 
 }
 
-.carrier { width: calc(var(--cell-size) * 5); background-image: url('./assets/carrier.png'); }
-.battleship { width: calc(var(--cell-size) * 4); background-image: url('./assets/battleship.png'); }
-.cruiser { width: calc(var(--cell-size) * 3); background-image: url('./assets/cruiser.png'); }
-.submarine { width: calc(var(--cell-size) * 3); background-image: url('./assets/submarine.png'); }
-.destroyer { width: calc(var(--cell-size) * 2); background-image: url('./assets/destroyer.png'); }
+.carrier { width: calc(var(--cell-size) * 5); background-image: url('../assets/carrier.png'); }
+.battleship { width: calc(var(--cell-size) * 4); background-image: url('../assets/battleship.png'); }
+.cruiser { width: calc(var(--cell-size) * 3); background-image: url('../assets/cruiser.png'); }
+.submarine { width: calc(var(--cell-size) * 3); background-image: url('../assets/submarine.png'); }
+.destroyer { width: calc(var(--cell-size) * 2); background-image: url('../assets/destroyer.png'); }
 
 .game-container { 
     display: flex; 
@@ -379,4 +379,10 @@ h1 {
     width: 100%;
     padding: 10px 0 5px;
     border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+#game-page {
+    width: 100%;
+    display: none; 
+    flex-direction: column;
+    align-items: center;
 }
