@@ -448,7 +448,7 @@ async function submitScore(mode) {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${token}`
             },
-            body: JSON.stringify({ mode, result: "win" });
+            body: JSON.stringify({ mode, result: "win" })
         });
         const data = await res.json();
         if (data.success) {
