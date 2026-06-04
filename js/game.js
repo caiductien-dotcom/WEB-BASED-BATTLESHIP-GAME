@@ -442,13 +442,13 @@ async function submitScore(mode) {
     if (!token) return; // chua dang nhap thi bo qua, khong bao loi
 
     try {
-        const res = await fetch(`${window.BASE_URL}/api/update-score`, {
+        const res = await fetch(`${window.BASE_URL}/api/save-match`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${token}`
             },
-            body: JSON.stringify({ mode }) // "easy" hoac "hard"
+            body: JSON.stringify({ mode, result: "win" });
         });
         const data = await res.json();
         if (data.success) {
