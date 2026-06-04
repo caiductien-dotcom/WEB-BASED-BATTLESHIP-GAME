@@ -2,7 +2,7 @@ import { postData, getVal, showAlert, enableActiveCopy, switchPage } from "./uti
 
 async function handleSignup() {
     const name = getVal("name");
-    const email = getVal("email");
+    const email = getVal("email-signup");
     const password = getVal("newPassword");
 
     if (!isValidEmail(email)) return showAlert("Invalid email!");
@@ -68,7 +68,7 @@ export function isValidEmail(email) {
 function initAuthEvents() {
     const passwordInput = document.getElementById("newPassword");
     const signupBtn = document.getElementById("btnSignup");
-    const emailInput = document.getElementById("email");
+    const emailInput = document.getElementById("email-signup");
     const loginEmailInput = document.getElementById("email");
     const loginPasswordInput = document.getElementById("password");
     const loginBtnElement = document.getElementById("btnLogin");
