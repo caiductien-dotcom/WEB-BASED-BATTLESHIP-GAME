@@ -442,7 +442,7 @@ async function submitScore(mode) {
     if (!token) return; // chua dang nhap thi bo qua, khong bao loi
 
     try {
-        const res = await fetch(`${window.BASE_URL}/api/save-match`, {
+        const res = await fetch(`https://saas-backend-trcf.onrender.com/api/save-match`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
