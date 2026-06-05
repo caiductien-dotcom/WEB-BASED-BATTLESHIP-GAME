@@ -4,6 +4,7 @@ import { board_size, direction, phase } from "./constants.js";
 import { playerShipArmy } from "./ship.js";
 import { placeCPUShips, easyBotAttack, hardBotAttack, memoryReset } from "./ai.js";
 import { AudioController } from "./audio.js";
+import { BASE_URL } from "./utils.js";
 
 const G_STATE = {
     players: {
@@ -442,7 +443,7 @@ async function submitScore(mode) {
     if (!token) return; // chua dang nhap thi bo qua, khong bao loi
 
     try {
-        const res = await fetch(`https://saas-backend-trcf.onrender.com/api/save-match`, {
+        const res = await fetch(`${BASE_URL}/api/save-match`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

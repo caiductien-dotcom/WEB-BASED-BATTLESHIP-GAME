@@ -1,4 +1,4 @@
-export const BASE_URL = "https://battleship-game-server.onrender.com";
+export const BASE_URL = "https://saas-backend-trcf.onrender.com"; 
 
 async function postData(endpoint, data) {
     try {
