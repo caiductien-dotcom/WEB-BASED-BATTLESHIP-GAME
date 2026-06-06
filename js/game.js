@@ -386,7 +386,7 @@ document.getElementById('btn-lock-p1').addEventListener('click', () => lockFleet
 document.getElementById('btn-lock-p2').addEventListener('click', () => lockFleet(2));
 
 //Logic tan cong
-function handleAttack(row, col) {
+async function handleAttack(row, col) {
     if (isGameOver || !canPlayerAttack) return;
 
     const opponentId = G_STATE.currentPlayer === 1 ? 2 : 1;
@@ -412,7 +412,7 @@ function handleAttack(row, col) {
         // Cong diem khi thang AI (single player)
         if (!isPvP) {
             const mode = difficultySelect.value; // "easy" hoac "hard"
-            submitScore(mode);
+            await submitScore(mode); // cho submit score roi moi show modal
         }
 
         showGameModal("VICTORY!", `PLAYER ${G_STATE.currentPlayer} WINS!`);
