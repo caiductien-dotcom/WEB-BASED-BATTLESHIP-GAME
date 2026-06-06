@@ -5,11 +5,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Battleship Game</title>
-    
+
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./css/style.css">
     <link rel="stylesheet" href="./css/style3.css">
-    
+
     <script>
         const urlParams = new URLSearchParams(window.location.search);
         const tokenFromUrl = urlParams.get('token');
@@ -28,9 +28,32 @@
             style="position: fixed; top: 20px; right: 20px; z-index: 1000; padding: 10px 20px; background: #e74c3c; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; box-shadow: 0 4px #c0392b;">
             LOG OUT
         </button>
-
+        <!-- User info góc trên trái -->
+        <div style="position: fixed; top: 20px; left: 20px; z-index: 1000; 
+            display: flex; flex-direction: column; gap: 4px;">
+            <span id="user-name-display" style="
+        background: rgba(255,255,255,0.9);
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-weight: bold;
+        color: #1a237e;
+        font-size: 0.85rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                👤 ...
+            </span>
+            <span id="user-score-display" style="
+        background: rgba(255,255,255,0.9);
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-weight: bold;
+        color: #e65100;
+        font-size: 0.85rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                ⭐ 0 pts
+            </span>
+        </div>
         <h1>BATTLESHIP GAME</h1>
-        
+
         <div id="start-modal" class="modal-overlay" style="display: flex;">
             <div class="modal-content">
                 <h2 id="start-title">BATTLESHIP COMMAND</h2>
@@ -43,7 +66,8 @@
             </div>
         </div>
 
-        <div id="fog-of-war-modal" class="modal-overlay" style="display: none; z-index: 200; backdrop-filter: blur(15px);">
+        <div id="fog-of-war-modal" class="modal-overlay"
+            style="display: none; z-index: 200; backdrop-filter: blur(15px);">
             <div class="modal-content" style="background: rgba(255, 255, 255, 0.9);">
                 <h2 id="fog-title" style="font-size: 2.5rem; color: #e74c3c;">PLAYER 2'S TURN</h2>
                 <p>Please pass the device to your opponent. No peeking!</p>
@@ -82,7 +106,8 @@
                     <div class="board-header">
                         <h3 style="margin: 0;">Player 1</h3>
                         <div style="display: flex; gap: 5px;">
-                            <button id="btn-lock-p1" class="toggle-btn" style="padding: 5px 10px; font-size: 0.7rem;">🔒 Lock</button>
+                            <button id="btn-lock-p1" class="toggle-btn" style="padding: 5px 10px; font-size: 0.7rem;">🔒
+                                Lock</button>
                         </div>
                     </div>
                     <div id="player-board" class="board fleet-hidden"></div>
@@ -92,7 +117,8 @@
                     <div class="board-header">
                         <h3 style="margin: 0;">Player 2</h3>
                         <div style="display: flex; gap: 5px;">
-                            <button id="btn-lock-p2" class="toggle-btn" style="display:none; padding: 5px 10px; font-size: 0.7rem;">🔒 Lock</button>
+                            <button id="btn-lock-p2" class="toggle-btn"
+                                style="display:none; padding: 5px 10px; font-size: 0.7rem;">🔒 Lock</button>
                         </div>
                     </div>
                     <div id="cpu-board" class="board"></div>
@@ -197,7 +223,7 @@
                 <input type="text" class="input" id="email-forgot">
             </div>
             <button class="btn" id="btnForgot">Send OTP</button>
-            
+
             <div class="footer-text">
                 <a href="#" class="link" onclick="switchPage('login'); return false;">Back to login</a>
             </div>
@@ -239,7 +265,7 @@
             </div>
 
             <button class="btn" id="btnResetAll">Change Password</button>
-            
+
             <div class="footer-text">
                 <a href="#" class="link" onclick="switchPage('forgot'); return false;">Back to request OTP</a>
             </div>
@@ -251,7 +277,7 @@
     <script type="module" src="./js/utils.js"></script>
     <script type="module" src="./js/auth.js"></script>
     <script type="module" src="./js/forgot.js"></script>
-    
+
     <script type="module" src="./js/game.js"></script>
     <script type="module" src="./js/audio.js"></script>
     <script src="./js/logout.js"></script>

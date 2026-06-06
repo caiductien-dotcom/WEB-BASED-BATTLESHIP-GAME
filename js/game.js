@@ -6,6 +6,29 @@ import { placeCPUShips, easyBotAttack, hardBotAttack, memoryReset } from "./ai.j
 import { AudioController } from "./audio.js";
 import { BASE_URL } from "./utils.js";
 
+// Them o dau file, sau cac import
+async function loadUserInfo() {
+    const token = localStorage.getItem("userToken");
+    if (!token) return;
+
+    try {
+        const res = await fetch(`${BASE_URL}/api/me`, {
+            headers: { "Authorization": `Bearer ${token}` }
+        });
+        const data = await res.json();
+        if (data.success) {
+            // Hien ten user goc tren trai
+            const nameEl = document.getElementById('user-name-display');
+            const scoreEl = document.getElementById('user-score-display');
+            if (nameEl) nameEl.innerText = `👤 ${data.name}`;
+            if (scoreEl) scoreEl.innerText = `⭐ ${data.score} pts`;
+        }
+    } catch (err) {
+        console.error("Failed to load user info:", err);
+    }
+}
+
+loadUserInfo(); // Goi ngay khi game.js chay
 const G_STATE = {
     players: {
         1: {
@@ -455,9 +478,14 @@ async function submitScore(mode) {
         if (data.success) {
             const pts = mode === "hard" ? 3 : 1;
             console.log(`[SCORE] +${pts} pts (${mode}) => Total: ${data.score}`);
-            // Hien diem trong modal luon
+
+            // Cap nhat score hien thi luon
+            const scoreEl = document.getElementById('user-score-display');
+            if (scoreEl) scoreEl.innerText = `⭐ ${data.score} pts`;
+
+            // Hien diem trong modal
             const modalMsg = document.getElementById('modal-message');
-            modalMsg.innerText += `\n⭐ +${pts} point${pts > 1 ? "s" : ""}! Total score: ${data.score}`;
+            if (modalMsg) modalMsg.innerText += `\n⭐ +${pts} point${pts > 1 ? "s" : ""}! Total score: ${data.score}`;
         }
     } catch (err) {
         console.error("[SCORE] Update failed:", err);
