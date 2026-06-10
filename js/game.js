@@ -6,30 +6,22 @@ import { placeCPUShips, easyBotAttack, hardBotAttack, memoryReset } from "./ai.j
 import { AudioController } from "./audio.js";
 import { BASE_URL } from "./utils.js";
 
+// Them o dau file, sau cac import
 async function loadUserInfo() {
-    // Hien ngay tu localStorage truoc (khong can fetch)
-    const cachedName = localStorage.getItem("userName");
-    const cachedScore = localStorage.getItem("userScore");
-    
-    const nameEl = document.getElementById('user-name-display');
-    const scoreEl = document.getElementById('user-score-display');
-    
-    if (cachedName && nameEl) nameEl.innerText = `👤 ${cachedName}`;
-    if (cachedScore !== null && scoreEl) scoreEl.innerText = `⭐ ${cachedScore} pts`;
-
-    // Sau do fetch /api/me de cap nhat moi nhat
     const token = localStorage.getItem("userToken");
     if (!token) return;
+
     try {
         const res = await fetch(`${BASE_URL}/api/me`, {
             headers: { "Authorization": `Bearer ${token}` }
         });
         const data = await res.json();
         if (data.success) {
+            // Hien ten user goc tren trai
+            const nameEl = document.getElementById('user-name-display');
+            const scoreEl = document.getElementById('user-score-display');
             if (nameEl) nameEl.innerText = `👤 ${data.name}`;
             if (scoreEl) scoreEl.innerText = `⭐ ${data.score} pts`;
-            localStorage.setItem("userName", data.name);
-            localStorage.setItem("userScore", data.score);
         }
     } catch (err) {
         console.error("Failed to load user info:", err);

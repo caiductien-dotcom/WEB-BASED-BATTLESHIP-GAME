@@ -13,15 +13,7 @@ async function handleSignup() {
     showAlert(msg, result.success);
 
     if (result.success) {
-        const token = result.token || result.accessToken || result.data?.token;
-        if (!token) return showAlert("Login succeeded but no token received.");
-
-        localStorage.setItem("userToken", token);
-        localStorage.setItem("userEmail", email);
-        if (result.name) localStorage.setItem("userName", result.name);
-        if (result.score !== undefined) localStorage.setItem("userScore", result.score);
-
-        setTimeout(() => { switchPage("game"); }, 2000);
+        setTimeout(() => { switchPage("login"); }, 2000);
     }
 }
 
